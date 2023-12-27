@@ -49,7 +49,7 @@ Quiz
 <section class="content">
     <div class="container-fluid">
         <div class="row">
-            @foreach($modelquiz as $quiz)
+            @foreach($modelquiz as $key => $quiz)
             <div class="col-md-4">
                 <div class="square-card">
                     <!-- Ujian Card 1 -->
@@ -60,7 +60,7 @@ Quiz
                         <div class="card-body text-center">
                             <img style="width: 50vh; height: 30vh" src="{{asset('images_quiz/'.$quiz->gambar_quiz)}}" alt="Gambar Matematika" class="img-fluid rounded">
                             <p class="card-text">
-                                <strong>Jumlah Soal:</strong> {{$jumlahsoal}}<br>
+                                <strong>Jumlah Soal:</strong> {{$jumlahsoal[$key]}}<br>
                                 <strong>Tanggal Mulai Ujian:</strong> {{strftime('%d %B %Y', strtotime($quiz->tanggal_mulai))}}<br>
                                 <strong>Tanggal Selesai Ujian:</strong> {{strftime('%d %B %Y', strtotime($quiz->tanggal_berakhir))}}
                             </p>

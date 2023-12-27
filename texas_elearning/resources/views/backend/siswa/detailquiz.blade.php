@@ -10,7 +10,7 @@ Quiz
 @endsection
 @section('css')
 <style>
-    
+
 </style>
 @endsection
 @section('content')
@@ -20,7 +20,7 @@ Quiz
             <div class="col-md-12">
                 <div class="box box-primary">
                     <div id="countdown" class="mb-2"></div>
-                    <?php if (!cekQuiz($quiz[0]->quiz_id, Auth::user()->id, $quiz[0]->jadwal)) {?>
+                    <?php if (!cekQuiz($quiz[0]->quiz_id, Auth::user()->id, $quiz[0]->jadwal)) { ?>
                         <div class="box-body" id="datapertanyaan">
                             @include('backend/siswa.quizpaginator')
                         </div>
@@ -46,7 +46,9 @@ Quiz
             getData(myurl);
 
             // Tambahkan langkah navigasi ke dalam riwayat
-            history.pushState({ page: page }, "", myurl);
+            history.pushState({
+                page: page
+            }, "", myurl);
         });
 
         // Tangani perubahan state saat tombol navigasi browser digunakan
@@ -60,41 +62,86 @@ Quiz
 
     function getData(url) {
         $.ajax({
-            url: url,
-            type: "get",
-            datatype: "html",
-        })
-        .done(function(data) {
-            $("#datapertanyaan").html(data);
-        })
-        .fail(function(jqXHR, ajaxOptions, thrownError) {
-            alert('No response from server');
-        });
+                url: url,
+                type: "get",
+                datatype: "html",
+            })
+            .done(function(data) {
+                $("#datapertanyaan").html(data);
+                activateEventListeners()
+            })
+            .fail(function(jqXHR, ajaxOptions, thrownError) {
+                alert('No response from server');
+            });
     }
 </script>
 <script>
-        var waktuBatas = new Date("{{ $datawaktu->waktu_end }}").getTime();
+    var waktuBatas = new Date("{{ $datawaktu->waktu_end }}").getTime();
 
-        var x = setInterval(function() {
-            var sekarang = new Date().getTime();
-            var selisihWaktu = waktuBatas - sekarang;
+    var x = setInterval(function() {
+        var sekarang = new Date().getTime();
+        var selisihWaktu = waktuBatas - sekarang;
 
-            var jam = Math.floor(selisihWaktu / (1000 * 60 * 60));
-            var menit = Math.floor((selisihWaktu % (1000 * 60 * 60)) / (1000 * 60));
-            var detik = Math.floor((selisihWaktu % (1000 * 60)) / 1000);
+        var jam = Math.floor(selisihWaktu / (1000 * 60 * 60));
+        var menit = Math.floor((selisihWaktu % (1000 * 60 * 60)) / (1000 * 60));
+        var detik = Math.floor((selisihWaktu % (1000 * 60)) / 1000);
 
-            document.getElementById("countdown").innerHTML = jam + "h " + menit + "m " + detik + "s ";
+        document.getElementById("countdown").innerHTML = jam + "h " + menit + "m " + detik + "s ";
 
-            if (selisihWaktu < 0) {
-                clearInterval(x);
-                document.getElementById("countdown").innerHTML = "Waktu sudah habis!";
-                // Tambahkan kode di sini untuk menangani situasi waktu habis
-                var quiz_id = "{{$quiz[0]->quiz_id}}";
-                var jadwal_id = "{{$quiz[0]->jadwal}}";
-                waktuHabis(quiz_id,jadwal_id);
-            }
-        }, 1000);
-    </script>
+        if (selisihWaktu < 0) {
+            clearInterval(x);
+            document.getElementById("countdown").innerHTML = "Waktu sudah habis!";
+            // Tambahkan kode di sini untuk menangani situasi waktu habis
+            var quiz_id = "{{$quiz[0]->quiz_id}}";
+            var jadwal_id = "{{$quiz[0]->jadwal}}";
+            waktuHabis(quiz_id, jadwal_id);
+        }
+    }, 1000);
+
+    /* function activateEventListeners() {
+        var textareas = document.querySelectorAll('textarea[data-jawaban-id]');
+
+        textareas.forEach(function(textarea) {
+            var jawabanId = textarea.getAttribute('data-jawaban-id');
+            var wordCountDisplay = document.getElementById('wordCount' + jawabanId);
+
+            textarea.addEventListener('input', function() {
+                var wordCount = countWords(textarea.value);
+                wordCountDisplay.innerHTML = 'Jumlah kata: ' + wordCount;
+            });
+        });
+
+        function countWords(text) {
+            var words = text.match(/\b\w+\b/g) || [];
+            return words.length;
+        }
+    } */
+    function activateEventListeners() {
+        var textareas = document.querySelectorAll('textarea[data-jawaban-id]');
+
+        textareas.forEach(function(textarea) {
+            var jawabanId = textarea.getAttribute('data-jawaban-id');
+            var wordCountDisplay = document.getElementById('wordCount' + jawabanId);
+
+            textarea.addEventListener('input', function() {
+                var wordCount = countWords(textarea.value);
+                wordCountDisplay.innerHTML = 'Jumlah kata: ' + wordCount;
+            });
+
+            // Inisialisasi hitung kata saat halaman dimuat
+            var initialWordCount = countWords(textarea.value);
+            wordCountDisplay.innerHTML = 'Jumlah kata: ' + initialWordCount;
+        });
+
+        function countWords(text) {
+            var words = text.match(/\b\w+\b/g) || [];
+            return words.length;
+        }
+    }
+
+    // Panggil fungsi untuk mengaktifkan listener pada saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', activateEventListeners);
+</script>
 <script src="{{asset('js/HasilPilihanQuiz.js')}}"></script>
 
 @endsection

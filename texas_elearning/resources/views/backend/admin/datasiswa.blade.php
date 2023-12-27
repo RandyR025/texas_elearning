@@ -28,7 +28,7 @@ Data siswa
                                     <th>Telepon</th>
                                     <th>Kelas</th>
                                     <th>Kursus</th>
-                                    <th colspan="2">Aksi</th>
+                                    <th>Edit</th>
                                 </tr>
                             </thead>
                         </table>

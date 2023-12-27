@@ -29,6 +29,20 @@ Data Pertanyaan
                             </textarea>
                             <span class="text-danger error-text pertanyaan_error"></span>
                             <div class="form-group">
+                                <label>Tipe Pertanyaan</label>
+                                <select class="form-control tipe_pertanyaan" style="width: 50%;" name="tipe_pertanyaan" id="tipe_pertanyaan">
+                                    <option value="Pilihan">Pilihan Ganda</option>
+                                    <option value="Teks">Teks</option>
+                                </select>
+                                <span class="text-danger error-text tipe_pertanyaan_error"></span>
+                            </div>
+                            <div class="form-group" id="text_input" hidden>
+                                <div class="input-group">
+                                    <input type="text" class="form-control col-md-1" id="textbobot" name="textbobot" placeholder="Bobot" value="0" oninput="validasiInputText()">
+                                    <textarea name="textjawaban" id="textjawaban" cols="30" rows="2" class="form-control col-md-5"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group" id="tambahpilihan">
                                 <button type="button" class="btn btn-success" onclick="tambahInput()">Tambah Jawaban</button>
                             </div>
                             <div id="container-input-dinamis">
@@ -51,7 +65,8 @@ Data Pertanyaan
                                 <tr>
                                     <th>Pertanyaan</th>
                                     <th>Tipe Pertanyaan</th>
-                                    <th colspan="2">Aksi</th>
+                                    <th>Edit</th>
+                                    <th>Hapus</th>
                                 </tr>
                             </thead>
                         </table>
@@ -77,7 +92,23 @@ Data Pertanyaan
                                     <textarea id="summernote2" name="editpertanyaan">Masukkan <em>pertanyaan</em> <u>kamu</u> <strong>disini</strong></textarea>
                                     <span class="text-danger error-text editpertanyaan_error"></span>
 
-                                    <div class="form-group form1">
+                                    <div class="form-group">
+                                        <label>Tipe Pertanyaan</label>
+                                        <select class="form-control edittipe_pertanyaan" style="width: 50%;" name="edittipe_pertanyaan" id="edittipe_pertanyaan">
+                                            <option value="Pilihan">Pilihan Ganda</option>
+                                            <option value="Teks">Teks</option>
+                                        </select>
+                                        <span class="text-danger error-text edittipe_pertanyaan_error"></span>
+                                    </div>
+                                    <div class="form-group" id="text_inputedit" hidden>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control col-md-1" id="edittextbobot" name="edittextbobot" placeholder="Bobot" value="0" oninput="validasiInputTextedit()">
+                                            <textarea name="edittextjawaban" id="edittextjawaban" cols="30" rows="2" class="form-control col-md-5"></textarea>
+                                            <input type="hidden" name="textid" id="textid">
+                                            <input type="hidden" name="tipe" id="tipe">
+                                        </div>
+                                    </div>
+                                    <div class="form-group form1" id="tambahpilihanedit">
                                         <button type="button" class="btn btn-success" onclick="tambahInputedit()">Tambah Jawaban</button>
                                     </div>
 
@@ -102,6 +133,39 @@ Data Pertanyaan
     $(document).ready(function() {
         tambahInput();
         validasiInputedit();
+        $("#tipe_pertanyaan").change(function() {
+            var selectedValue = $(this).val();
+
+            if (selectedValue == "Pilihan") {
+                $('#tambahpilihan').prop("hidden", false);
+                $('#container-input-dinamis').prop("hidden", false);
+                $('#text_input').prop("hidden", true);
+                tambahInput();
+            } else if (selectedValue == "Teks") {
+                $('#tambahpilihan').prop("hidden", true);
+                $('#container-input-dinamis').prop("hidden", true);
+                $('#text_input').prop("hidden", false);
+                $('#container-input-dinamis').empty();
+                $('#submitBtn').prop('disabled', false);
+            }
+        });
+        $("#edittipe_pertanyaan").change(function() {
+            var selectedValue = $(this).val();
+
+            if (selectedValue == "Pilihan") {
+                $('#tambahpilihanedit').prop("hidden", false);
+                $('#container-input-d').prop("hidden", false);
+                $('#text_inputedit').prop("hidden", true);
+                if ($('#container-input-d').children().length > 1) {
+                    tambahInputedit();
+                }
+            } else if (selectedValue == "Teks") {
+                $('#tambahpilihanedit').prop("hidden", true);
+                $('#container-input-d').prop("hidden", true);
+                $('#text_inputedit').prop("hidden", false);
+                $('#submitBtnedit').prop('disabled', false);
+            }
+        });
     });
 
     function tambahInput() {
@@ -109,7 +173,7 @@ Data Pertanyaan
 
         var inputBaru = '<div class="form-group">' +
             '<div class="input-group">' +
-            '<input type="text" class="form-control col-md-1" id="bobot' + nomorInput + '" name="bobot[]" placeholder="Bobot" oninput="validasiInput(' + nomorInput + ')">' +
+            '<input type="text" class="form-control col-md-1" id="bobot' + nomorInput + '" name="bobot[]" placeholder="Bobot" oninput="validasiInput(' + nomorInput + ')" value="0">' +
             '<input type="text" class="form-control col-md-5" id="jawaban' + nomorInput + '" name="jawaban[]" oninput="validasiInput(' + nomorInput + ')">' +
             '<span class="input-group-btn">' +
             '<button type="button" class="btn btn-danger" onclick="hapusInput(this)"><i class="fa fa-trash"></i></button>' +
@@ -181,6 +245,32 @@ Data Pertanyaan
         return semuaInputTerisi;
     }
 
+    function validasiInputText() {
+        var semuaInputTerisi = true;
+        $('[id^="textbobot"]').each(function() {
+            var textbobotInput = $(this).val();
+            if (textbobotInput === '') {
+                semuaInputTerisi = false;
+                return false;
+            }
+        });
+        $('#submitBtn').prop('disabled', !semuaInputTerisi);
+        return semuaInputTerisi;
+    }
+
+    function validasiInputTextedit() {
+        var semuaInputTerisi = true;
+        $('[id^="edittextbobot"]').each(function() {
+            var textbobotInput = $(this).val();
+            if (textbobotInput === '') {
+                semuaInputTerisi = false;
+                return false;
+            }
+        });
+        $('#submitBtnedit').prop('disabled', !semuaInputTerisi);
+        return semuaInputTerisi;
+    }
+
 
     function hapusInput(element) {
         $(element).closest('.form-group').remove();
@@ -212,6 +302,12 @@ Data Pertanyaan
             theme: "monokai"
         });
     })
+    $('.tipe_pertanyaan').select2({
+        theme: 'bootstrap4'
+    });
+    $('.edittipe_pertanyaan').select2({
+        theme: 'bootstrap4'
+    });
 </script>
 <script src="{{asset('js/Pertanyaan.js')}}"></script>
 @endsection

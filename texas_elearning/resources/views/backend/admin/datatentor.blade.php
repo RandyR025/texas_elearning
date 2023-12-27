@@ -27,7 +27,7 @@ Data tentor
                                     <th>Alamat</th>
                                     <th>Telepon</th>
                                     <th>Kursus</th>
-                                    <th colspan="2">Aksi</th>
+                                    <th>Edit</th>
                                 </tr>
                             </thead>
                         </table>

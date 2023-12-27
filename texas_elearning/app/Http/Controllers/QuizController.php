@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DetailHasil;
 use App\Models\DetailWaktu;
 use App\Models\HasilPilihan;
+use App\Models\HasilText;
 use App\Models\Jadwal;
 use App\Models\Jawaban;
 use App\Models\KategoriQuiz;
@@ -196,9 +197,10 @@ class QuizController extends Controller
 
     public function quizSiswa()
     {
+        $jumlahsoal = [];
         $modelquiz = Quiz::select('quiz.id', 'quiz.judul_quiz', 'quiz.gambar_quiz', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.id as id_jadwal')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->get();
         foreach ($modelquiz as $key => $value) {
-            $jumlahsoal = Pertanyaan::where('quiz_id', '=', $value->id)->get()->count();
+            $jumlahsoal[$key] = Pertanyaan::where('quiz_id', '=', $value->id)->get()->count();
         }
         $tanggal = Carbon::now('Asia/Jakarta');
         $now = $tanggal->toDateString();
@@ -207,7 +209,7 @@ class QuizController extends Controller
     }
     public function quizDetail(Request $request, $id, $jadwal)
     {
-        $quiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal]])->paginate(1);
+        $quiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal]])->paginate(1);
         $pilihan = [];
         $cekstatus = $datawaktu = DetailWaktu::where([['user_id','=',Auth::user()->id],['quiz_id','=',$id],['jadwal_id','=',$jadwal]])->get()->count();
         // dd($cekstatus);
@@ -253,6 +255,32 @@ class QuizController extends Controller
                 ['pertanyaan_id', '=', $request->pengisian_id],
                 ['jadwal_id', '=', $request->tanggal_id],
             ])->update(['jawaban_id' => $request->option_id]);
+        }
+    }
+
+    public function HasilTextQuiz(Request $request)
+    {
+        // return $request->pertanyaan_id;
+        $query = HasilText::where([
+            ['user_id', '=', Auth::user()->id],
+            ['pertanyaan_id', '=', $request->pertanyaan_id],
+            ['jadwal_id', '=', $request->jadwal_id],
+        ])->count();
+
+        if ($query == 0) {
+            $hasilText = new HasilText;
+            $hasilText->jawaban_id = $request->jawaban_id;
+            $hasilText->pertanyaan_id = $request->pertanyaan_id;
+            $hasilText->jadwal_id = $request->jadwal_id;
+            $hasilText->jawaban = $request->data;
+            $hasilText->user_id = Auth::user()->id;
+            $hasilText->save();
+        } else {
+            HasilText::where([
+                ['user_id', '=', Auth::user()->id],
+                ['pertanyaan_id', '=', $request->pertanyaan_id],
+                ['jadwal_id', '=', $request->jadwal_id],
+            ])->update(['jawaban' => $request->data]);
         }
     }
 

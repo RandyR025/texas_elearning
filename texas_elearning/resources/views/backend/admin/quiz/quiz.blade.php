@@ -74,7 +74,9 @@ Data Quiz
                                 <tr>
                                     <th>Judul Quiz</th>
                                     <th>Kategori Quiz</th>
-                                    <th colspan="3">Aksi</th>
+                                    <th>Edit</th>
+                                    <th>Hapus</th>
+                                    <th>Detail</th>
                                 </tr>
                             </thead>
                         </table>

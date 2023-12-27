@@ -56,7 +56,8 @@ Data Kategori Quiz
                                 <tr>
                                     <th>Nama Kategori</th>
                                     <th>Deskripsi</th>
-                                    <th colspan="2">Aksi</th>
+                                    <th>Edit</th>
+                                    <th>Hapus</th>
                                 </tr>
                             </thead>
                         </table>

@@ -52,12 +52,21 @@ class PertanyaanController extends Controller
             $modelpertanyaan->pertanyaan = $request->input('pertanyaan');
             // $modelpertanyaan->tipe_pertanyaan = $request->input('kategori');
             $modelpertanyaan->quiz_id = $request->input('hidden_id');
+            $modelpertanyaan->tipe_pertanyaan = $request->tipe_pertanyaan;
             $modelpertanyaan->save();
             // dd($request->input('bobot'));
-            foreach ($request->input('bobot') as $key => $bobot) {
+            if ($request->tipe_pertanyaan == "Pilihan") {
+                foreach ($request->input('bobot') as $key => $bobot) {
+                    $modeljawaban = new Jawaban; // Sesuaikan dengan model Anda
+                    $modeljawaban->point = $bobot;
+                    $modeljawaban->jawaban = $request->input('jawaban')[$key];
+                    $modeljawaban->pertanyaan_id = $modelpertanyaan->id;
+                    $modeljawaban->save();
+                }
+            } elseif ($request->tipe_pertanyaan == "Teks") {
                 $modeljawaban = new Jawaban; // Sesuaikan dengan model Anda
-                $modeljawaban->point = $bobot;
-                $modeljawaban->jawaban = $request->input('jawaban')[$key];
+                $modeljawaban->point = $request->textbobot;
+                $modeljawaban->jawaban = $request->textjawaban;
                 $modeljawaban->pertanyaan_id = $modelpertanyaan->id;
                 $modeljawaban->save();
             }
@@ -127,25 +136,45 @@ class PertanyaanController extends Controller
             if ($modelpertanyaan) {
                 $modelpertanyaan->update([
                     'pertanyaan' => $request->input('editpertanyaan'),
-                    // 'tipe_pertanyaan' => $request->input('kategori'),
+                    'tipe_pertanyaan' => $request->input('edittipe_pertanyaan'),
                     // dd($request->input('bobot'));1
                 ]);
-                if ($request->input('editbobot')) {
-                    foreach ($request->input('editbobot') as $key => $bobot) {
-                        $modeljawaban = Jawaban::where('id', $request->id[$key]); // Sesuaikan dengan model Anda
-                        $modeljawaban->update([
-                            'point' => $bobot,
-                            'jawaban' => $request->input('editjawaban')[$key],
-                        ]);
+                if ($request->edittipe_pertanyaan == "Pilihan") {
+                    if ($request->input('editbobot')) {
+                        foreach ($request->input('editbobot') as $key => $bobot) {
+                            $modeljawaban = Jawaban::where('id', $request->id[$key]); // Sesuaikan dengan model Anda
+                            $modeljawaban->update([
+                                'point' => $bobot,
+                                'jawaban' => $request->input('editjawaban')[$key],
+                            ]);
+                        }
                     }
-                }
-                if ($request->input('editbobottambah')) {
-                    foreach ($request->input('editbobottambah') as $key => $bobot) {
-                        $modeljawaban = new Jawaban; // Sesuaikan dengan model Anda
-                        $modeljawaban->point = $bobot;
-                        $modeljawaban->jawaban = $request->input('editjawabantambah')[$key];
+                    if ($request->input('editbobottambah')) {
+                        if ($request->tipe == "Teks") {
+                            Jawaban::where('pertanyaan_id', '=', $id)->delete();
+                        }
+                        foreach ($request->input('editbobottambah') as $key => $bobot) {
+                            $modeljawaban = new Jawaban; // Sesuaikan dengan model Anda
+                            $modeljawaban->point = $bobot;
+                            $modeljawaban->jawaban = $request->input('editjawabantambah')[$key];
+                            $modeljawaban->pertanyaan_id = $id;
+                            $modeljawaban->save();
+                        }
+                    }
+                } elseif ($request->edittipe_pertanyaan == "Teks") {
+                    if ($request->tipe == "Pilihan") {
+                        Jawaban::where('pertanyaan_id', '=', $id)->delete();
+                        $modeljawaban = new Jawaban;
+                        $modeljawaban->point = $request->edittextbobot;
+                        $modeljawaban->jawaban = $request->edittextjawaban;
                         $modeljawaban->pertanyaan_id = $id;
                         $modeljawaban->save();
+                    }elseif ($request->tipe == "Teks") {
+                        $modeljawaban = Jawaban::where('id','=',$request->textid);
+                        $modeljawaban->update([
+                            'point' => $request->edittextbobot,
+                            'jawaban' => $request->edittextjawaban,
+                        ]);
                     }
                 }
                 return response()->json([

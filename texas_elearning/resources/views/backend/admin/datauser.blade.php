@@ -99,7 +99,8 @@ Data User
                                 <tr>
                                     <th>Username</th>
                                     <th>Level</th>
-                                    <th colspan="2">Aksi</th>
+                                    <th>Edit</th>
+                                    <th>Hapus</th>
                                 </tr>
                             </thead>
                         </table>

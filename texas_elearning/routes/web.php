@@ -109,6 +109,7 @@ Route::group(['middleware' => ['auth','web']], function () {
         Route::get('/quizsiswa', [QuizController::class, 'quizSiswa'])->name('quizsiswa');
         Route::get('/quizsiswa/detail/{id}/{jadwal}', [QuizController::class, 'quizDetail'])->name('quizsiswadetail');
         Route::post('/hasilpilihanquiz', [QuizController::class, 'HasilPilihanQuiz'])->name('hasilpilihanquiz');
+        Route::post('/hasiltextquiz', [QuizController::class, 'HasilTextQuiz'])->name('hasiltextquiz');
         Route::get('/totalnilai/{id}/{tgl}', [QuizController::class, 'totalnilai'])->name('totalnilai');
         // Route::get('/quizsiswa/detail/fetch_data/{id}/{jadwal}', [QuizController::class, 'fetch_data']);
         /* End Quiz */

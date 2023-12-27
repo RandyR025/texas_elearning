@@ -89,9 +89,17 @@ $(function () {
                         title: "Berhasil Di Tambah!",
                     });
                     pertanyaantable.ajax.reload();
-                    $("#datapertanyaan_form")[0].reset();
+                    if ($("#tipe_pertanyaan").val() == "Pilihan") {
+                        $("#datapertanyaan_form")[0].reset();
+                    }
                     $("#datapertanyaan_form").find("textarea").val("");
-                    $("#submitBtn").attr("disabled", "disabled");
+                    $('#summernote').summernote('code', '');
+                    if($("#tipe_pertanyaan").val() == "Pilihan"){
+                        $("#submitBtn").attr("disabled", "disabled");
+                    }
+                    if($("#tipe_pertanyaan").val() == "Teks"){
+                        $("#submitBtn").prop("disabled", false);
+                    }
                     $(".text-danger").text("");
                 }
             },
@@ -119,8 +127,11 @@ $(document).on("click", ".edit_datapertanyaan", function (e) {
                 $("#summernote2").summernote(
                     "code",
                     response.modelpertanyaan.pertanyaan
-                );
-                $("#container-input-d").html("");
+                    );
+                $("#edittipe_pertanyaan").val(response.modelpertanyaan.tipe_pertanyaan).trigger("change");
+                $("#tipe").val(response.modelpertanyaan.tipe_pertanyaan);
+                if (response.modelpertanyaan.tipe_pertanyaan == "Pilihan") {
+                    $("#container-input-d").html("");
                 $.each(response.modeljawaban, function (key, item) {
                     $("#container-input-d").append(
                         '<div class="form-group">' +
@@ -151,6 +162,19 @@ $(document).on("click", ".edit_datapertanyaan", function (e) {
                             "</div>"
                     );
                 });
+                }else if (response.modelpertanyaan.tipe_pertanyaan == "Teks") {
+                    if (response.modeljawaban[0].jawaban == null) {
+                        $("#edittextbobot").val(response.modeljawaban[0].point);
+                        $("#edittextjawaban").val();
+                        $("#textid").val(response.modeljawaban[0].id);
+                    }else{
+                        $("#edittextbobot").val(response.modeljawaban[0].point);
+                        $("#edittextjawaban").val(response.modeljawaban[0].jawaban);
+                        $("#textid").val(response.modeljawaban[0].id);
+
+                    }
+                }
+                
             }
         },
     });
@@ -309,3 +333,6 @@ function hapusInputedit(button) {
         });
 }
 /* Hapus Data Jawaban */
+$(document).ready(function() {
+    
+});

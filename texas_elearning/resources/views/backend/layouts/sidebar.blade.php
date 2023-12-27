@@ -70,8 +70,8 @@
                         <p>Data Tentor</p>
                     </a>
                 </li>
-                <li class="nav-item {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz') ? 'active' : '' }}">
+                <li class="nav-item {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-chart-pie"></i>
                         <p>
                             Quizezz
@@ -86,7 +86,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{route('dataquiz')}}" class="nav-link {{ Route::is('dataquiz') ? 'active' : '' }}">
+                            <a href="{{route('dataquiz')}}" class="nav-link {{ Route::is('dataquiz')||Route::is('dataquiz.pertanyaan') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Quiz</p>
                             </a>

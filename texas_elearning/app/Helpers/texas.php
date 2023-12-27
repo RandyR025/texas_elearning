@@ -2,6 +2,7 @@
 
 use App\Models\DetailHasil;
 use App\Models\HasilPilihan;
+use App\Models\HasilText;
 
 function hasilPilihan($pilihan,$user,$tanggal){
     $query = HasilPilihan::where([
@@ -25,5 +26,17 @@ function cekQuiz($quiz, $user, $jadwal){
         return true;
     }else {
         return false;
+    }
+}
+function hasilText($jawaban,$user,$tanggal){
+    $query = HasilText::where([
+        ['user_id','=',$user],
+        ['jawaban_id','=',$jawaban],
+        ['jadwal_id','=',$tanggal],
+    ])->first();
+    // dd($query->jawaban);
+    if (isset($query)) {
+        $hasiltext = $query->jawaban;
+        return $hasiltext;
     }
 }

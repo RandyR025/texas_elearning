@@ -39,3 +39,29 @@ function waktuHabis(Quiz, Jadwal) {
         },
     });
 }
+
+function textSavedata(data,jawaban_id, pertanyaan_id, jadwal_id) {
+    $.ajaxSetup({
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+        },
+    });
+    var Data = data.value;
+    var jawabanID = jawaban_id;
+    var pertanyaanID = pertanyaan_id;
+    var jadwalID = jadwal_id;
+    var s = {
+        jawaban_id: jawabanID,
+        pertanyaan_id: pertanyaanID,
+        jadwal_id: jadwalID,
+        data: Data,
+    };
+    $.ajax({
+        url: "/hasiltextquiz",
+        type: "POST",
+        data: s,
+        success: function (data) {
+            console.log(data);
+        },
+    });
+}
