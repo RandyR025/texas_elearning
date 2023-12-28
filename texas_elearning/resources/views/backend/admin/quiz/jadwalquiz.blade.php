@@ -58,6 +58,11 @@ Data Jadwal Quiz
                                             <input type="text" class="form-control" id="waktu_quiz" placeholder="Waktu Quiz" name="waktu_quiz" oninput="validateInput(this)">
                                             <span class="text-danger error-text waktu_quiz_error"></span>
                                         </div>
+                                        <div class="form-group">
+                                            <label for="tampilan_soal">Tampilan Soal/Halaman</label>
+                                            <input type="text" class="form-control" id="tampilan_soal" placeholder="Tampilan Soal" name="tampilan_soal" oninput="validateInput(this)">
+                                            <span class="text-danger error-text tampilan_soal_error"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -83,6 +88,7 @@ Data Jadwal Quiz
                                     <th>Tanggal Mulai</th>
                                     <th>Tanggal Berakhir</th>
                                     <th>Waktu Quiz</th>
+                                    <th>Tampilan Soal</th>
                                     <th>Edit</th>
                                     <th>Hapus</th>
                                 </tr>
@@ -145,6 +151,11 @@ Data Jadwal Quiz
                                                 <label for="editwaktu_quiz">Waktu Quiz</label>
                                                 <input type="text" class="form-control" id="editwaktu_quiz" placeholder="Waktu Quiz" name="editwaktu_quiz" oninput="validateInput(this)">
                                                 <span class="text-danger error-text editwaktu_quiz_error"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="edittampilan_soal">Tampilan Soal/Halaman</label>
+                                                <input type="text" class="form-control" id="edittampilan_soal" placeholder="Waktu Quiz" name="edittampilan_soal" oninput="validateInput(this)">
+                                                <span class="text-danger error-text edittampilan_soal_error"></span>
                                             </div>
                                         </div>
                                     </div>

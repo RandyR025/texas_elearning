@@ -16,5 +16,6 @@ class Jadwal extends Model
         'tanggal_mulai',
         'tanggal_berakhir',
         'waktu_quiz',
+        'tampilan_soal',
     ];
 }

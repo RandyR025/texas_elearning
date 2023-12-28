@@ -15,5 +15,6 @@ class Quiz extends Model
         'judul_quiz',
         'kategori_id',
         'gambar_quiz',
+        'audio_quiz',
     ];
 }

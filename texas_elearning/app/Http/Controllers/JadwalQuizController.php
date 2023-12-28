@@ -44,6 +44,7 @@ class JadwalQuizController extends Controller
             'tanggal_mulai' => 'required',
             'tanggal_berakhir' => 'required',
             'waktu_quiz' => 'required',
+            'tampilan_soal' => 'required',
 
         ]);
         if ($validator->fails()) {
@@ -57,6 +58,7 @@ class JadwalQuizController extends Controller
             $modeljadwalquiz->tanggal_mulai = $request->input('tanggal_mulai');
             $modeljadwalquiz->tanggal_berakhir = $request->input('tanggal_berakhir');
             $modeljadwalquiz->waktu_quiz = $request->input('waktu_quiz');
+            $modeljadwalquiz->tampilan_soal = $request->input('tampilan_soal');
             $modeljadwalquiz->save();
 
             return response()->json([
@@ -113,6 +115,7 @@ class JadwalQuizController extends Controller
             'edittanggal_mulai' => 'required',
             'edittanggal_berakhir' => 'required',
             'editwaktu_quiz' => 'required',
+            'edittampilan_soal' => 'required',
 
         ]);
         if ($validator->fails()) {
@@ -128,6 +131,7 @@ class JadwalQuizController extends Controller
                     'tanggal_mulai' => $request->input('edittanggal_mulai'),
                     'tanggal_berakhir' => $request->input('edittanggal_berakhir'),
                     'waktu_quiz' => $request->input('editwaktu_quiz'),
+                    'tampilan_soal' => $request->input('edittampilan_soal'),
 
 
                 ]);
@@ -162,7 +166,7 @@ class JadwalQuizController extends Controller
     }
     public function getData()
     {
-        $jadwal = Jadwal::select('jadwalquiz.id', 'jadwalquiz.quiz_id', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.waktu_quiz', 'quiz.judul_quiz')
+        $jadwal = Jadwal::select('jadwalquiz.id', 'jadwalquiz.quiz_id', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.waktu_quiz', 'jadwalquiz.tampilan_soal', 'quiz.judul_quiz')
             ->join('quiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')
             ->get();
 

@@ -53,6 +53,7 @@ class QuizController extends Controller
             'judul_quiz' => 'required',
             'kategori' => 'required',
             'gambar_quiz' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'audio_quiz' => 'mimes:mp3,wav',
 
         ]);
         if ($validator->fails()) {
@@ -70,6 +71,13 @@ class QuizController extends Controller
                 $filename = time() . '.' . $extension;
                 $file->move('images_quiz', $filename);
                 $modelquiz->gambar_quiz = $filename;
+            }
+            if ($request->hasFile('audio_quiz')) {
+                $file = $request->file('audio_quiz');
+                $extension = $file->getClientOriginalExtension();
+                $filename = time() . '.' . $extension;
+                $file->move('audios_quiz', $filename);
+                $modelquiz->audio_quiz = $filename;
             }
             $modelquiz->save();
 
@@ -137,7 +145,27 @@ class QuizController extends Controller
         } else {
             $modelquiz = Quiz::find($id);
             if ($modelquiz) {
-                if ($request->hasFile('editgambar_quiz')) {
+                if ($request->hasFile('editgambar_quiz') && $request->hasFile('editaudio_quiz')) {
+                    File::delete('images_quiz/' . $modelquiz->gambar_quiz);
+                    $file = $request->file('editgambar_quiz');
+                    $extension = $file->getClientOriginalExtension();
+                    $filename = time() . '.' . $extension;
+                    $file->move('images_quiz', $filename);
+
+                    File::delete('audios_quiz/' . $modelquiz->audio_quiz);
+                    $file = $request->file('editaudio_quiz');
+                    $extension = $file->getClientOriginalExtension();
+                    $filenameaudio = time() . '.' . $extension;
+                    $file->move('audios_quiz', $filenameaudio);
+
+                    $modelquiz->update([
+                        'judul_quiz' => $request->input('editjudul_quiz'),
+                        'kategori_id' => $request->input('editkategori'),
+                        'gambar_quiz' => $filename,
+                        'audio_quiz' => $filenameaudio,
+
+                    ]);
+                } elseif ($request->hasFile('editgambar_quiz')) {
                     File::delete('images_quiz/' . $modelquiz->gambar_quiz);
                     $file = $request->file('editgambar_quiz');
                     $extension = $file->getClientOriginalExtension();
@@ -147,6 +175,19 @@ class QuizController extends Controller
                         'judul_quiz' => $request->input('editjudul_quiz'),
                         'kategori_id' => $request->input('editkategori'),
                         'gambar_quiz' => $filename,
+
+                    ]);
+                }elseif ($request->hasFile('editaudio_quiz')) {
+                    File::delete('audios_quiz/' . $modelquiz->audio_quiz);
+                    $file = $request->file('editaudio_quiz');
+                    $extension = $file->getClientOriginalExtension();
+                    $filenameaudio = time() . '.' . $extension;
+                    $file->move('audios_quiz', $filenameaudio);
+
+                    $modelquiz->update([
+                        'judul_quiz' => $request->input('editjudul_quiz'),
+                        'kategori_id' => $request->input('editkategori'),
+                        'audio_quiz' => $filenameaudio,
 
                     ]);
                 } else {
@@ -179,6 +220,13 @@ class QuizController extends Controller
      */
     public function destroy($id)
     {
+        $modelquiz = Quiz::find($id);
+        if ($modelquiz->gambar_quiz != null) {
+            File::delete('images_quiz/' . $modelquiz->gambar_quiz);
+        }
+        if ($modelquiz->audio_quiz != null) {
+            File::delete('audios_quiz/' . $modelquiz->audio_quiz);
+        }
         Quiz::find($id)->delete();
         return response()->json([
             'status' => 200,
@@ -209,7 +257,9 @@ class QuizController extends Controller
     }
     public function quizDetail(Request $request, $id, $jadwal)
     {
-        $quiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal]])->paginate(1);
+        $halaman = Jadwal::find($jadwal);
+        // dd($halaman->tampilan_soal);
+        $quiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal]])->paginate($halaman->tampilan_soal);
         $pilihan = [];
         $cekstatus = $datawaktu = DetailWaktu::where([['user_id','=',Auth::user()->id],['quiz_id','=',$id],['jadwal_id','=',$jadwal]])->get()->count();
         // dd($cekstatus);

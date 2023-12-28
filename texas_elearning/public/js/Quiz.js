@@ -95,10 +95,14 @@ $(function () {
                     $("#dataquiz_form")[0].reset();
                     resetselect2();
                     $("#gambar_quiz").val("");
+                    $("#audio_quiz").val("");
 
                     // Reset the image preview
                     $("#image_preview").attr("src", "");
                     $("#image_preview").css("display", "none");
+
+                    $("#audio_preview").attr("src", "");
+                    $("#audio_preview").css("display", "none");
 
                     // Reset the custom file label
                     $("#fileLabel").html("Choose file");
@@ -130,6 +134,18 @@ $(document).on("click", ".edit_dataquiz", function (e) {
                 $("#editkategori")
                     .val(response.modelquiz.kategori_id)
                     .trigger("change");
+                if (response.modelquiz.audio_quiz != null) {
+                    $("#editaudio_preview").html(
+                        '<audio controls id="editaudio_player"></audio>'
+                    );
+                    $("#editaudio_player").attr(
+                        "src",
+                        "audios_quiz/" + response.modelquiz.audio_quiz
+                    );
+                }
+                if (response.modelquiz.audio_quiz == null) {
+                    $("#editaudio_preview").html('');
+                }
                 if (response.modelquiz.gambar_quiz != null) {
                     $("#editimage_preview").attr(
                         "src",
@@ -137,10 +153,8 @@ $(document).on("click", ".edit_dataquiz", function (e) {
                     );
                     $("#editimage_preview").css("display", "block");
                     $("#editgambar_quiz").val(response.modelquiz.gambar_quiz);
-                }else{
-                    $("#editimage_preview").attr(
-                        "src",''
-                    );
+                } else {
+                    $("#editimage_preview").attr("src", "");
                     $("#editimage_preview").css("display", "block");
                 }
             }

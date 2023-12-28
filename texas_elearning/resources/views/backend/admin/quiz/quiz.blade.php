@@ -46,11 +46,19 @@ Data Quiz
                                             </div>
                                             <span class="text-danger error-text gambar_quiz_error"></span>
                                         </div>
-
                                         <!-- Image Preview -->
                                         <div class="form-group">
                                             <img id="image_preview" class="img-fluid" style="display: none; max-width: 200px; max-height: 200px;">
                                         </div>
+                                        <div class="form-group">
+                                            <label for="audio_quiz">Audio Quiz</label>
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" accept=".mp3, .wav" id="audio_quiz" name="audio_quiz" onchange="previewAudio();">
+                                                <label class="custom-file-label" for="audio_quiz" id="fileLabel">Choose file</label>
+                                            </div>
+                                            <span class="text-danger error-text audio_quiz_error"></span>
+                                        </div>
+                                        <div id="audio_preview"></div>
                                     </div>
                                 </div>
                             </div>
@@ -131,6 +139,16 @@ Data Quiz
                                             <div class="form-group">
                                                 <img id="editimage_preview" class="img-fluid" style="display: none; max-width: 200px; max-height: 200px;">
                                             </div>
+
+                                            <div class="form-group">
+                                                <label for="editaudio_quiz">Audio Quiz</label>
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input" id="editaudio_quiz" name="editaudio_quiz" onchange="editpreviewAudio(this);">
+                                                    <label class="custom-file-label" for="editaudio_quiz" id="fileLabeledit">Choose file</label>
+                                                </div>
+                                                <span class="text-danger error-text editaudio_quiz_error"></span>
+                                            </div>
+                                            <div id="editaudio_preview"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -173,6 +191,7 @@ Data Quiz
             $('#image_preview').css('display', 'none');
         }
     }
+
     function editpreviewImage(input) {
         var file = input.files[0];
         if (file) {
@@ -186,6 +205,36 @@ Data Quiz
         } else {
             $('#editimage_preview').attr('src', '');
             $('#editimage_preview').css('display', 'none');
+        }
+    }
+
+    function previewAudio() {
+        var input = document.querySelector('input[name="audio_quiz"]');
+        var audioPreview = document.getElementById('audio_preview');
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                audioPreview.innerHTML = '<audio controls><source src="' + e.target.result + '" type="audio/' + input.files[0].type.split('/')[1] + '">Your browser does not support the audio element.</audio>';
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function editpreviewAudio() {
+        var input = document.querySelector('input[name="editaudio_quiz"]');
+        var editaudioPreview = document.getElementById('editaudio_preview');
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                editaudioPreview.innerHTML = '<audio controls><source src="' + e.target.result + '" type="audio/' + input.files[0].type.split('/')[1] + '">Your browser does not support the audio element.</audio>';
+            };
+
+            reader.readAsDataURL(input.files[0]);
         }
     }
 </script>

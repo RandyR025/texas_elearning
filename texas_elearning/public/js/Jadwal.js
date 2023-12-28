@@ -28,6 +28,13 @@ var jadwaltable = $("#datajadwalquiz").DataTable({
             },
         },
         {
+            data: "tampilan_soal",
+            name: "tampilan_soal",
+            render: function (data, type, full, meta) {
+                return data + " Soal";
+            },
+        },
+        {
             data: "id",
             render: function (data, type, full, meta) {
                 return (
@@ -120,6 +127,7 @@ $(document).on("click", ".edit_datajadwalquiz", function (e) {
                     response.modeljadwalquiz.tanggal_berakhir
                 );
                 $("#editwaktu_quiz").val(response.modeljadwalquiz.waktu_quiz);
+                $("#edittampilan_soal").val(response.modeljadwalquiz.tampilan_soal);
                 $("#editnama_quiz")
                     .val(response.modeljadwalquiz.quiz_id)
                     .trigger("change");
