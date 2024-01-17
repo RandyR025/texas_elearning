@@ -54,6 +54,7 @@ Data Kategori Quiz
                         <table id="datakategoriquiz" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Nama Kategori</th>
                                     <th>Deskripsi</th>
                                     <th>Edit</th>

@@ -63,6 +63,7 @@ Data Pertanyaan
                         <table id="datapertanyaantentor" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Pertanyaan</th>
                                     <th>Tipe Pertanyaan</th>
                                     <th>Edit</th>

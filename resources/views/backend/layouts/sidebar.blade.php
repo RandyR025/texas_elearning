@@ -76,8 +76,8 @@
                         <p>Data Kelas</p>
                     </a>
                 </li>
-                <li class="nav-item {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan') ? 'active' : '' }}">
+                <li class="nav-item {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan')||Route::is('datahasilquiz') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan')||Route::is('datahasilquiz') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-chart-pie"></i>
                         <p>
                             Quizezz
@@ -103,12 +103,18 @@
                                 <p>Jadwal Quiz</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{route('datahasilquiz')}}" class="nav-link {{ Route::is('datahasilquiz') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Hasil Quiz</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 @endif
                 @if(auth()->user()->level_id == 2)
-                <li class="nav-item {{ Route::is('dataquiztentor')||Route::is('datajadwalquiztentor')||Route::is('dataquiztentor.pertanyaan') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ Route::is('datakategoriquiz')||Route::is('dataquiztentor')||Route::is('datajadwalquiztentor')||Route::is('dataquiztentor.pertanyaan') ? 'active' : '' }}">
+                <li class="nav-item {{ Route::is('dataquiztentor')||Route::is('datajadwalquiztentor')||Route::is('dataquiztentor.pertanyaan')||Route::is('datahasilquiztentor') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ Route::is('datakategoriquiz')||Route::is('dataquiztentor')||Route::is('datajadwalquiztentor')||Route::is('dataquiztentor.pertanyaan')||Route::is('datahasilquiztentor') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-chart-pie"></i>
                         <p>
                             Quizezz
@@ -126,6 +132,12 @@
                             <a href="{{route('datajadwalquiztentor')}}" class="nav-link {{ Route::is('datajadwalquiztentor') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Jadwal Quiz</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route('datahasilquiztentor')}}" class="nav-link {{ Route::is('datahasilquiztentor') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Hasil Quiz</p>
                             </a>
                         </li>
                     </ul>

@@ -61,7 +61,7 @@ function textSavedata(data,jawaban_id, pertanyaan_id, jadwal_id) {
         type: "POST",
         data: s,
         success: function (data) {
-            console.log(data);
+            // console.log(data);
         },
     });
 }

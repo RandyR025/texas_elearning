@@ -22,6 +22,7 @@ Data tentor
                         <table id="datatentor" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Nama tentor</th>
                                     <th>Tanggal Lahir</th>
                                     <th>Alamat</th>

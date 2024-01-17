@@ -66,7 +66,7 @@ class JadwalQuizController extends Controller
             $modeljadwalquiz->waktu_quiz = $request->input('waktu_quiz');
             $modeljadwalquiz->tampilan_soal = $request->input('tampilan_soal');
             $modeljadwalquiz->user_id = json_encode($request->input('tentor'));
-            $modeljadwalquiz->kelas = $request->input('kelas');
+            $modeljadwalquiz->kelas_id = $request->input('kelas');
             $modeljadwalquiz->save();
 
             return response()->json([

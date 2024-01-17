@@ -17,6 +17,12 @@ var kategoriquiztable = $("#datakategoriquiz").DataTable({
         },
     },
     columns: [
+        { data: null, orderable: false, searchable: false,
+            render: function (data, type, full, meta) {
+                // Menambahkan nomor urut
+                return meta.row + 1;
+            }
+        },
         { data: "nama_kategori", name: "nama_kategori" },
         { data: "deskripsi", name: "deskripsi" },
         {
@@ -44,6 +50,10 @@ var kategoriquiztable = $("#datakategoriquiz").DataTable({
             searchable: false,
         },
     ],
+    createdRow: function (row, data, dataIndex) {
+        // Menambahkan kelas untuk memastikan nomor urut sesuai dengan urutan DataTable
+        $(row).find('td:eq(0)').addClass('text-center');
+    }
 });
 /* Menampilkan Data */
 

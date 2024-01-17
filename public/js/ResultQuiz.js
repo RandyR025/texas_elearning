@@ -1,5 +1,5 @@
 /* Menampilkan Data */
-var jadwaltable = $("#datajadwalquiz").DataTable({
+var jadwaltable = $("#datahasilquiz").DataTable({
     processing: true,
     serverSide: true,
     paging: true,
@@ -10,7 +10,7 @@ var jadwaltable = $("#datajadwalquiz").DataTable({
     autoWidth: false,
     responsive: true,
     ajax: {
-        url: "/datajadwalquiz/data",
+        url: "/datahasilquiz/data",
         type: "GET",
         headers: {
             "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
@@ -35,31 +35,19 @@ var jadwaltable = $("#datajadwalquiz").DataTable({
             },
         },
         {
-            data: "tampilan_soal",
-            name: "tampilan_soal",
+            data: "jumlah_siswa",
+            name: "jumlah_siswa",
             render: function (data, type, full, meta) {
-                return data + " Soal";
+                return data + " Siswa";
             },
         },
         {
             data: "id",
             render: function (data, type, full, meta) {
                 return (
-                    '<button value="' +
+                    '<a href="/datahasilquiz/detail/' +
                     data +
-                    '" class="btn btn-xs btn-primary edit_datajadwalquiz"><i class="fa fa-edit"></i></button>'
-                );
-            },
-            orderable: false,
-            searchable: false,
-        },
-        {
-            data: "id",
-            render: function (data, type, full, meta) {
-                return (
-                    '<button value="' +
-                    data +
-                    '" class="btn btn-xs btn-danger delete_datajadwalquiz"><i class="fa fa-trash"></i></button>'
+                    '" class="btn btn-xs btn-danger view_dataquiz"><i class="fa fa-eye"></i></a>'
                 );
             },
             orderable: false,
@@ -73,56 +61,86 @@ var jadwaltable = $("#datajadwalquiz").DataTable({
 });
 /* Menampilkan Data */
 
-/* Tambah Data */
-$(function () {
-    $("#datajadwalquiz_form").on("submit", function (e) {
-        e.preventDefault();
-        $.ajaxSetup({
-            headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+var currentURL = window.location.href;
+var urlParts = currentURL.split("/");
+var pageID = urlParts[urlParts.length - 1];
+
+var detailhasiltable = $("#detaildatahasilquiz").DataTable({
+    processing: true,
+    serverSide: true,
+    paging: true,
+    lengthChange: false,
+    searching: true,
+    ordering: true,
+    info: true,
+    autoWidth: false,
+    responsive: true,
+    ajax: {
+        url: "/detaildatahasilquiz/data/" + pageID,
+        type: "GET",
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+        },
+    },
+    columns: [
+        { data: null, orderable: false, searchable: false,
+            render: function (data, type, full, meta) {
+                // Menambahkan nomor urut
+                return meta.row + 1;
+            }
+        },
+        { data: "nama", name: "nama" },
+        { data: "skor", name: "skor" },
+        {
+            data: "id",
+            render: function (data, type, full, meta) {
+                return (
+                    '<button value="' +
+                    data +
+                    '" class="btn btn-xs btn-primary edit_hasildataquiz"><i class="fa fa-edit"></i></button>'
+                );
             },
-        });
-        $.ajax({
-            url: $(this).attr("action"),
-            method: $(this).attr("method"),
-            data: new FormData(this),
-            processData: false,
-            dataType: "json",
-            contentType: false,
-            beforeSend: function () {
-                $(document).find("span.error-text").text("");
+            orderable: false,
+            searchable: false,
+        },
+        {
+            data: "id",
+            render: function (data, type, full, meta) {
+                return (
+                    '<a href="/detaildatahasilquiz/detail/' +
+                    data +
+                    '" class="btn btn-xs btn-danger view_hasildataquiz"><i class="fa fa-eye"></i></a>'
+                );
             },
-            success: function (response) {
-                console.log(response);
-                if (response.status == 400) {
-                    $("#saveform_errList").html("");
-                    $("#saveform_errList").addClass("alert alert-danger");
-                    $.each(response.errors, function (prefix, val) {
-                        $("span." + prefix + "_error").text(val[0]);
-                    });
-                } else {
-                    Toast.fire({
-                        icon: "success",
-                        title: "Berhasil Di Tambah!",
-                    });
-                    jadwaltable.ajax.reload();
-                    $("#datajadwalquiz_form")[0].reset();
-                    resetselect2();
-                    $(".text-danger").text("");
-                }
+            orderable: false,
+            searchable: false,
+        },
+        {
+            data: "id",
+            render: function (data, type, full, meta) {
+                return (
+                    '<button value="' +
+                    data +
+                    '" class="btn btn-xs btn-danger delete_datahasilquiz"><i class="fa fa-trash"></i></button>'
+                );
             },
-        });
-    });
+            orderable: false,
+            searchable: false,
+        },
+    ],
+    createdRow: function (row, data, dataIndex) {
+        // Menambahkan kelas untuk memastikan nomor urut sesuai dengan urutan DataTable
+        $(row).find('td:eq(0)').addClass('text-center');
+    }
 });
 
-/* Edit Data */
-$(document).on("click", ".edit_datajadwalquiz", function (e) {
+$(document).on("click", ".edit_hasildataquiz", function (e) {
     e.preventDefault();
-    var jadwalquiz_id = $(this).val();
-    $("#editjadwalquizmodal").modal("show");
+    var hasilquiz_id = $(this).val();
+    $("#editnilaimodal").modal("show");
     $.ajax({
         type: "GET",
-        url: "/datajadwalquiz/edit/" + jadwalquiz_id,
+        url: "/datahasilquiz/edit/" + hasilquiz_id,
         success: function (response) {
             console.log(response);
             if (response.status == 404) {
@@ -130,40 +148,14 @@ $(document).on("click", ".edit_datajadwalquiz", function (e) {
                 $("#success_message").addClass("alert alert-danger");
                 $("#success_message").text(response.message);
             } else {
-                // $("#edit_id").val(jadwalquiz_id);
-                $("#hidden_id").val(jadwalquiz_id);
-                $("#edittanggal_mulai1").val(
-                    response.modeljadwalquiz.tanggal_mulai
-                );
-                $("#edittanggal_berakhir1").val(
-                    response.modeljadwalquiz.tanggal_berakhir
-                );
-                $("#editwaktu_quiz").val(response.modeljadwalquiz.waktu_quiz);
-                $("#edittampilan_soal").val(
-                    response.modeljadwalquiz.tampilan_soal
-                );
-                $("#editnama_quiz")
-                    .val(response.modeljadwalquiz.quiz_id)
-                    .trigger("change");
-                $("#editkelas")
-                    .val(response.modeljadwalquiz.kelas_id)
-                    .trigger("change");
-                var user_ids = JSON.parse(response.modeljadwalquiz.user_id);
-                var selectedValues = [];
-
-                $.each(user_ids, function (index, user_id) {
-                    selectedValues.push(user_id);
-                });
-                $("#edittentor").val(selectedValues);
-                $("#edittentor").trigger("change");
+                $("#hidden_id").val(hasilquiz_id);
+                $("#editnilai").val(response.modeldetailhasil.totals);
             }
         },
     });
 });
-/* Edit Data */
 
-/* Update Data */
-$(document).on("submit", "#datajadwalquizedit_form", function (e) {
+$(document).on("submit", "#datanilaiedit_form", function (e) {
     e.preventDefault();
     $.ajaxSetup({
         headers: {
@@ -171,12 +163,12 @@ $(document).on("submit", "#datajadwalquizedit_form", function (e) {
         },
     });
 
-    var jadwalquiz_id = $("#hidden_id").val();
-    let EditformData = new FormData($("#datajadwalquizedit_form")[0]);
+    var hasilquiz_id = $("#hidden_id").val();
+    let EditformData = new FormData($("#datanilaiedit_form")[0]);
 
     $.ajax({
         type: "POST",
-        url: "/datajadwalquiz/update/" + jadwalquiz_id,
+        url: "/datahasilquiz/update/" + hasilquiz_id,
         data: EditformData,
         contentType: false,
         processData: false,
@@ -197,19 +189,17 @@ $(document).on("submit", "#datajadwalquizedit_form", function (e) {
                     icon: "success",
                     title: "Berhasil Di Update!",
                 });
-                jadwaltable.ajax.reload();
-                $("#editjadwalquizmodal").modal("hide");
-                $("#datajadwalquizedit_form")[0].reset();
+                detailhasiltable.ajax.reload();
+                $("#editnilaimodal").modal("hide");
+                $("#datanilaiedit_form")[0].reset();
             }
         },
     });
 });
-/* Update Data */
 
-/* Hapus Data */
-$(document).on("click", ".delete_datajadwalquiz", function (e) {
+$(document).on("click", ".delete_datahasilquiz", function (e) {
     e.preventDefault();
-    var jadwalquiz_id = $(this).val();
+    var hasilquiz_id = $(this).val();
     const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",
@@ -231,17 +221,15 @@ $(document).on("click", ".delete_datajadwalquiz", function (e) {
             if (result.isConfirmed) {
                 $.ajaxSetup({
                     headers: {
-                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                            "content"
-                        ),
+                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
                     },
                 });
                 $.ajax({
                     type: "DELETE",
-                    url: "/datajadwalquiz/delete/" + jadwalquiz_id,
+                    url: "/datahasilquiz/delete/" + hasilquiz_id,
                     success: function (response) {
                         console.log(response);
-                        jadwaltable.ajax.reload();
+                        detailhasiltable.ajax.reload();
                     },
                 });
 
@@ -250,7 +238,9 @@ $(document).on("click", ".delete_datajadwalquiz", function (e) {
                     "Data Telah Di Hapus",
                     "success"
                 );
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
+            } else if (
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
                 swalWithBootstrapButtons.fire(
                     "Batal",
                     "Data Anda Aman :D",
@@ -259,19 +249,3 @@ $(document).on("click", ".delete_datajadwalquiz", function (e) {
             }
         });
 });
-/* Hapus Data */
-
-function resetselect2() {
-    $(".nama_quiz").select2("destroy");
-    $(".nama_quiz").select2({
-        theme: "bootstrap4",
-    });
-    $(".tentor").select2("destroy");
-    $(".tentor").select2({
-        theme: "bootstrap4",
-    });
-    $(".kelas").select2("destroy");
-    $(".kelas").select2({
-        theme: "bootstrap4",
-    });
-}

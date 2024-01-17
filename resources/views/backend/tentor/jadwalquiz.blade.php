@@ -94,6 +94,7 @@ Data Jadwal Quiz
                         <table id="datajadwalquiztentor" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Quiz</th>
                                     <th>Kelas</th>
                                     <th>Tanggal Mulai</th>

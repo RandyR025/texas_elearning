@@ -80,6 +80,7 @@ Data Quiz
                         <table id="dataquiztentor" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Judul Quiz</th>
                                     <th>Kategori Quiz</th>
                                     <th>Edit</th>

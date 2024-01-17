@@ -17,6 +17,12 @@ var usertable = $("#datauser").DataTable({
         },
     },
     columns: [
+        { data: null, orderable: false, searchable: false,
+            render: function (data, type, full, meta) {
+                // Menambahkan nomor urut
+                return meta.row + 1;
+            }
+        },
         { data: "username", name: "username" },
         { data: "level", name: "level" },
         {
@@ -44,6 +50,10 @@ var usertable = $("#datauser").DataTable({
             searchable: false,
         },
     ],
+    createdRow: function (row, data, dataIndex) {
+        // Menambahkan kelas untuk memastikan nomor urut sesuai dengan urutan DataTable
+        $(row).find('td:eq(0)').addClass('text-center');
+    }
 });
 /* Menampilkan Data */
 

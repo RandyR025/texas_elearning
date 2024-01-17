@@ -254,7 +254,7 @@ class QuizController extends Controller
     public function quizSiswa()
     {
         $jumlahsoal = [];
-        $modelquiz = Quiz::select('quiz.id', 'quiz.judul_quiz', 'quiz.gambar_quiz', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.id as id_jadwal')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->get();
+        $modelquiz = Quiz::select('quiz.id', 'quiz.judul_quiz', 'quiz.gambar_quiz', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.id as id_jadwal')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where('jadwalquiz.kelas_id','=',Auth::user()->userSiswa->kelas_id)->get();
         foreach ($modelquiz as $key => $value) {
             $jumlahsoal[$key] = Pertanyaan::where('quiz_id', '=', $value->id)->get()->count();
         }
@@ -370,5 +370,13 @@ class QuizController extends Controller
         }
         // dd($total);
         return redirect()->route('quizsiswa');
+    }
+    public function cekhasil(Request $request, $id, $jadwal)
+    {
+        $modelhasil = DetailHasil::where([['user_id','=',Auth::user()->id],['quiz_id','=',$id],['jadwal_id','=',$jadwal]])->get()->count();
+        return response()->json([
+            'user' => $modelhasil,
+            'message' => "Berhasil Cek Hasil",
+        ]);
     }
 }

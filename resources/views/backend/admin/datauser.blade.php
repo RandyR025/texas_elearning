@@ -97,6 +97,7 @@ Data User
                         <table id="datauser" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Username</th>
                                     <th>Level</th>
                                     <th>Edit</th>

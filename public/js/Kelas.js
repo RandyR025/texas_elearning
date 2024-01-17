@@ -17,6 +17,12 @@ var kelastable = $("#datakelas").DataTable({
         },
     },
     columns: [
+        { data: null, orderable: false, searchable: false,
+            render: function (data, type, full, meta) {
+                // Menambahkan nomor urut
+                return meta.row + 1;
+            }
+        },
         { data: "kelas", name: "kelas" },
         {
             data: "id",
@@ -43,6 +49,10 @@ var kelastable = $("#datakelas").DataTable({
             searchable: false,
         },
     ],
+    createdRow: function (row, data, dataIndex) {
+        // Menambahkan kelas untuk memastikan nomor urut sesuai dengan urutan DataTable
+        $(row).find('td:eq(0)').addClass('text-center');
+    }
 });
 /* Menampilkan Data */
 

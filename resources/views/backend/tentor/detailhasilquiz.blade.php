@@ -1,57 +1,35 @@
 @extends('backend/layouts.template')
 @section('titlepage')
-Data Kelas
+Detail Hasil Quiz
+<?php if (isset($modelquiz->judul_quiz)) { ?>
+    {{$modelquiz->judul_quiz}}
+<?php } ?>
 @endsection
 @section('titlesub')
 Data Master
 @endsection
 @section('title')
-Data Kelas
+Data Hasil Quiz
 @endsection
 @section('content')
 <section class="content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-6">
-                <div class="card card-primary">
-                    <div class="card-header">
-                        <h3 class="card-title">Tambah Kelas</h3>
-                    </div>
-                    <div class="card-body" id="coba">
-                        <form action="{{ route('datakelas.tambah') }}" id="datakelas_form" method="post">
-                            @csrf
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="nama_kelas">Nama Kelas</label>
-                                            <input type="text" class="form-control" id="nama_kelas" placeholder="Kelas" name="nama_kelas">
-                                            <span class="text-danger error-text nama_kelas_error"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="card card-red">
                     <div class="card-header">
-                        <h3 class="card-title">Data Kelas</h3>
+                        <h3 class="card-title">Detail Hasil Quiz</h3>
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
-                        <table id="datakelas" class="table table-bordered table-striped">
+                        <table id="detaildatahasilquiz" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama Kelas</th>
+                                    <th>Nama</th>
+                                    <th>Skor</th>
                                     <th>Edit</th>
+                                    <th>Detail</th>
                                     <th>Hapus</th>
                                 </tr>
                             </thead>
@@ -61,28 +39,26 @@ Data Kelas
                 </div>
             </div>
 
-
-            <!-- Edit Modal -->
-            <div class="modal fade" id="editkelasmodal">
-                <div class="modal-dialog modal-md">
+            <div class="modal fade" id="editnilaimodal">
+                <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header bg-blue">
-                            <h4 class="modal-title">Update Data Kelas</h4>
+                            <h4 class="modal-title">Update Skor</h4>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form action="" id="datakelasedit_form">
+                            <form action="" id="datanilaiedit_form">
                                 @csrf
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label for="editnama_kelas">Nama Kelas</label>
+                                                <label for="editnilai">Skor</label>
                                                 <input id="hidden_id" type="text" class="name form-control" value="" name="id" hidden />
-                                                <input type="text" class="form-control" id="editnama_kelas" placeholder="Nama Kelas" name="editnama_kelas">
-                                                <span class="text-danger error-text editnama_kelas_error"></span>
+                                                <input type="text" class="form-control" id="editnilai" placeholder="Nilai" name="editnilai">
+                                                <span class="text-danger error-text editnilai_error"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -96,13 +72,48 @@ Data Kelas
                     </div>
                 </div>
             </div>
-            <!-- Edit Modal -->
         </div>
 
 
 </section>
 </div>
 @section('js')
-<script src="{{asset('js/Kelas.js')}}"></script>
+<script>
+    $('#tanggal_mulai').datetimepicker({
+        format: 'YYYY-MM-DD'
+    });
+    $('#tanggal_berakhir').datetimepicker({
+        format: 'YYYY-MM-DD'
+    });
+    $('#edittanggal_mulai').datetimepicker({
+        format: 'YYYY-MM-DD'
+    });
+    $('#edittanggal_berakhir').datetimepicker({
+        format: 'YYYY-MM-DD'
+    });
+    $('.nama_quiz').select2({
+        theme: 'bootstrap4'
+    })
+    $('.editnama_quiz').select2({
+        theme: 'bootstrap4'
+    })
+    $('.tentor').select2({
+        theme: 'bootstrap4'
+    })
+    $('.edittentor').select2({
+        theme: 'bootstrap4'
+    })
+    $('.kelas').select2({
+        theme: 'bootstrap4'
+    })
+    $('.editkelas').select2({
+        theme: 'bootstrap4'
+    })
+
+    function validateInput(input) {
+        input.value = input.value.replace(/[^0-9]/g, '');
+    }
+</script>
+<script src="{{asset('js/ResultQuizTentor.js')}}"></script>
 @endsection
 @endsection()

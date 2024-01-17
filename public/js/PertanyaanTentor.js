@@ -20,6 +20,12 @@ var pertanyaantable = $("#datapertanyaantentor").DataTable({
         },
     },
     columns: [
+        { data: null, orderable: false, searchable: false,
+            render: function (data, type, full, meta) {
+                // Menambahkan nomor urut
+                return meta.row + 1;
+            }
+        },
         {
             data: "pertanyaan",
             name: "pertanyaan",
@@ -53,6 +59,10 @@ var pertanyaantable = $("#datapertanyaantentor").DataTable({
             searchable: false,
         },
     ],
+    createdRow: function (row, data, dataIndex) {
+        // Menambahkan kelas untuk memastikan nomor urut sesuai dengan urutan DataTable
+        $(row).find('td:eq(0)').addClass('text-center');
+    }
 });
 /* Menampilkan Data */
 

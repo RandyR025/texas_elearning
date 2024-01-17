@@ -22,6 +22,7 @@ Data siswa
                         <table id="datasiswa" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Nama siswa</th>
                                     <th>Tanggal Lahir</th>
                                     <th>Alamat</th>
