@@ -55,9 +55,22 @@
     color: blue;
 }
 #countdown {
-        font-size: 2em;
-        text-align: center;
-        padding: 20px;
-        border: 2px solid #ccc;
-        border-radius: 8px;
-    }
+    font-size: 2em;
+    text-align: center;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+}
+.chord {
+    position: relative;
+    display: inline-block;
+}
+
+.chord::before {
+    content: attr(data-chord);
+    position: absolute;
+    top: -1em; /* Sesuaikan ini untuk menyesuaikan letak huruf A */
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+}

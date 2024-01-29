@@ -38,6 +38,7 @@ Quiz
         // Tangani klik pada tautan pagination
         $(document).on('click', '.pagination a', function(event) {
             event.preventDefault();
+            saveToDatabase();
 
             var myurl = $(this).attr('href');
             var page = $(this).attr('href').split('page=')[1];
@@ -98,37 +99,44 @@ Quiz
         }
     }, 1000);
 
-    /* function activateEventListeners() {
-        var textareas = document.querySelectorAll('textarea[data-jawaban-id]');
+    function autoSaveToCookies(textarea) {
+        var jawabanId = textarea.getAttribute('data-jawaban-id');
+        var jadwalId = textarea.getAttribute('data-jadwal-id');
+        var expirationTime = new Date().getTime() + 24 * 60 * 60 * 1000; // Set expiration to 24 hours from now
+        var dataToStore = {
+            content: textarea.value,
+            expiration: expirationTime
+        };
+        localStorage.setItem('textareaContent' + jawabanId + '_' + jadwalId, JSON.stringify(dataToStore));
+    }
 
-        textareas.forEach(function(textarea) {
-            var jawabanId = textarea.getAttribute('data-jawaban-id');
-            var wordCountDisplay = document.getElementById('wordCount' + jawabanId);
-
-            textarea.addEventListener('input', function() {
-                var wordCount = countWords(textarea.value);
-                wordCountDisplay.innerHTML = 'Jumlah kata: ' + wordCount;
-            });
-        });
-
-        function countWords(text) {
-            var words = text.match(/\b\w+\b/g) || [];
-            return words.length;
-        }
-    } */
     function activateEventListeners() {
         var textareas = document.querySelectorAll('textarea[data-jawaban-id]');
-
         textareas.forEach(function(textarea) {
             var jawabanId = textarea.getAttribute('data-jawaban-id');
+            var jadwalId = textarea.getAttribute('data-jadwal-id');
+            var datacek = textarea.getAttribute('data-cek');
             var wordCountDisplay = document.getElementById('wordCount' + jawabanId);
+
+            var savedData = localStorage.getItem('textareaContent' + jawabanId + '_' + jadwalId);
+            if (savedData && datacek == 0) {
+                var parsedData = JSON.parse(savedData);
+                if (parsedData.expiration > new Date().getTime()) {
+                    textarea.value = parsedData.content;
+                } else {
+                    // The data has expired, clear it
+                    localStorage.removeItem('textareaContent' + jawabanId + '_' + jadwalId);
+                }
+            }
 
             textarea.addEventListener('input', function() {
                 var wordCount = countWords(textarea.value);
                 wordCountDisplay.innerHTML = 'Jumlah kata: ' + wordCount;
+
+                // Save content to local storage with expiration
+                autoSaveToCookies(textarea);
             });
 
-            // Inisialisasi hitung kata saat halaman dimuat
             var initialWordCount = countWords(textarea.value);
             wordCountDisplay.innerHTML = 'Jumlah kata: ' + initialWordCount;
         });
@@ -166,6 +174,29 @@ Quiz
     });
 </script>
 <script src="{{asset('js/HasilPilihanQuiz.js')}}"></script>
+<script>
+    // function activateEventListeners() {
+    //     var textareas = document.querySelectorAll('textarea[data-jawaban-id]');
 
+    //     textareas.forEach(function(textarea) {
+    //         var jawabanId = textarea.getAttribute('data-jawaban-id');
+    //         var wordCountDisplay = document.getElementById('wordCount' + jawabanId);
+
+    //         textarea.addEventListener('input', function() {
+    //             var wordCount = countWords(textarea.value);
+    //             wordCountDisplay.innerHTML = 'Jumlah kata: ' + wordCount;
+    //         });
+
+    //         // Inisialisasi hitung kata saat halaman dimuat
+    //         var initialWordCount = countWords(textarea.value);
+    //         wordCountDisplay.innerHTML = 'Jumlah kata: ' + initialWordCount;
+    //     });
+
+    //     function countWords(text) {
+    //         var words = text.match(/\b\w+\b/g) || [];
+    //         return words.length;
+    //     }
+    // }
+</script>
 @endsection
 @endsection

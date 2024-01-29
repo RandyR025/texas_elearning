@@ -289,20 +289,145 @@ Data Pertanyaan
     }
 
 
-    $(function() {
-        $('#summernote').summernote()
-        CodeMirror.fromTextArea(document.getElementById("codeMirrorDemo"), {
-            mode: "htmlmixed",
-            theme: "monokai"
+    $(document).ready(function() {
+        $('#summernote').summernote({
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview']],
+                ['help', ['help']],
+                ['chords', ['chord']],
+            ],
+            buttons: {
+                chord: function(context) {
+                    var ui = $.summernote.ui;
+
+                    var button = ui.button({
+                        contents: '<i class="fa fa-music"/> Chord',
+                        tooltip: 'Insert Chord',
+                        click: function() {
+                            // Mendapatkan teks terpilih
+                            var selectedText = context.invoke('editor.getSelectedText');
+
+                            // Mengecek apakah ada teks yang dipilih
+                            if (selectedText && selectedText.trim() !== "") {
+                                // Mengambil nilai chord dari pengguna
+                                var chordValue = prompt("Masukkan nilai chord:", "");
+                                if (chordValue !== null && chordValue.trim() !== "") {
+                                    // Insert custom chord syntax with the selected text
+                                    var chordNode = createChordNode(selectedText, chordValue);
+                                    context.invoke('editor.insertNode', chordNode);
+                                }
+                            }
+                        }
+                    });
+
+                    return button.render(); // return button as jQuery object
+                }
+            },
+            callbacks: {
+                onInit: function() {
+                    // Ketika Summernote diinisialisasi, cek teks di dalamnya
+                    $('#summernote').summernote('code', parseChords($('#summernote').summernote('code')));
+                },
+                onChange: function(contents) {
+                    // Update the preview area with the parsed content
+                    $('#preview').html(parseChords(contents));
+                }
+            }
         });
-    })
-    $(function() {
-        $('#summernote2').summernote()
-        CodeMirror.fromTextArea(document.getElementById("codeMirrorDemo"), {
-            mode: "htmlmixed",
-            theme: "monokai"
+
+        function createChordNode(text, chordValue) {
+            var chordNode = document.createElement('span');
+            chordNode.className = 'chord';
+            chordNode.setAttribute('data-chord', chordValue);
+            chordNode.innerHTML = text;
+
+            return chordNode;
+        }
+
+        function parseChords(content) {
+            var chordsRegex = /<span class="chord" data-chord="(.*?)">(.*?)<\/span>/g;
+            return content.replace(chordsRegex, '{$1}');
+        }
+    });
+
+    $(document).ready(function() {
+        $('#summernote2').summernote({
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview']],
+                ['help', ['help']],
+                ['chords', ['chord']],
+            ],
+            buttons: {
+                chord: function(context) {
+                    var ui = $.summernote.ui;
+
+                    var button = ui.button({
+                        contents: '<i class="fa fa-music"/> Chord',
+                        tooltip: 'Insert Chord',
+                        click: function() {
+                            // Mendapatkan teks terpilih
+                            var selectedText = context.invoke('editor.getSelectedText');
+
+                            // Mengecek apakah ada teks yang dipilih
+                            if (selectedText && selectedText.trim() !== "") {
+                                // Mengambil nilai chord dari pengguna
+                                var chordValue = prompt("Masukkan nilai chord:", "");
+                                if (chordValue !== null && chordValue.trim() !== "") {
+                                    // Insert custom chord syntax with the selected text
+                                    var chordNode = createChordNode(selectedText, chordValue);
+                                    context.invoke('editor.insertNode', chordNode);
+                                }
+                            }
+                        }
+                    });
+
+                    return button.render(); // return button as jQuery object
+                }
+            },
+            callbacks: {
+                onInit: function() {
+                    // Ketika Summernote diinisialisasi, cek teks di dalamnya
+                    $('#summernote2').summernote('code', parseChords($('#summernote2').summernote('code')));
+                },
+                onChange: function(contents) {
+                    // Update the preview area with the parsed content
+                    $('#preview').html(parseChords(contents));
+                }
+            }
         });
-    })
+
+        function createChordNode(text, chordValue) {
+            var chordNode = document.createElement('span');
+            chordNode.className = 'chord';
+            chordNode.setAttribute('data-chord', chordValue);
+            chordNode.innerHTML = text;
+
+            return chordNode;
+        }
+
+        function parseChords(content) {
+            var chordsRegex = /<span class="chord" data-chord="(.*?)">(.*?)<\/span>/g;
+            return content.replace(chordsRegex, '{$1}');
+        }
+    });
     $('.tipe_pertanyaan').select2({
         theme: 'bootstrap4'
     });

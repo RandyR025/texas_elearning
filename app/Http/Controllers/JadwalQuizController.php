@@ -9,6 +9,7 @@ use App\Models\Tentor;
 use Illuminate\Http\Request;
 use DataTables;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class JadwalQuizController extends Controller
 {
@@ -19,10 +20,13 @@ class JadwalQuizController extends Controller
      */
     public function index()
     {
+        $currentDate = Carbon::now()->toDateString();
         $modelquiz = Quiz::all();
+        $modelprevquiz = Jadwal::join('quiz','jadwalquiz.quiz_id','=','quiz.id')->select('jadwalquiz.id', 'jadwalquiz.updated_at', 'quiz.judul_quiz')->whereDate('jadwalquiz.updated_at','=',$currentDate)->get();
+        // dd($modelprevquiz);
         $modelkelas = Kelas::all();
         $modeltentor = Tentor::join('users','tentor.user_id','=','users.id')->where('users.level_id','=',2)->get();
-        return view('backend/admin/quiz.jadwalquiz', compact('modelquiz','modeltentor','modelkelas'));
+        return view('backend/admin/quiz.jadwalquiz', compact('modelquiz','modeltentor','modelkelas','modelprevquiz'));
     }
 
     /**
@@ -67,6 +71,7 @@ class JadwalQuizController extends Controller
             $modeljadwalquiz->tampilan_soal = $request->input('tampilan_soal');
             $modeljadwalquiz->user_id = json_encode($request->input('tentor'));
             $modeljadwalquiz->kelas_id = $request->input('kelas');
+            $modeljadwalquiz->prev_quiz = $request->input('quiz_sebelumnya');
             $modeljadwalquiz->save();
 
             return response()->json([
@@ -96,10 +101,13 @@ class JadwalQuizController extends Controller
     public function edit($id)
     {
         $modeljadwalquiz = Jadwal::find($id);
+        $modeljadwalprevious = Jadwal::join('quiz','jadwalquiz.quiz_id','=','quiz.id')->select('jadwalquiz.id', 'jadwalquiz.quiz_id', 'jadwalquiz.kelas_id', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.waktu_quiz', 'jadwalquiz.tampilan_soal',  'jadwalquiz.user_id' ,'jadwalquiz.prev_quiz', 'quiz.judul_quiz')->where('jadwalquiz.id','=',$modeljadwalquiz->prev_quiz)->first();
+        // $modeljadwalquiz = Jadwal::join('quiz','jadwalquiz.quiz_id','=','quiz.id')->select('jadwalquiz.id', 'jadwalquiz.quiz_id', 'jadwalquiz.kelas_id', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.waktu_quiz', 'jadwalquiz.tampilan_soal',  'jadwalquiz.user_id' ,'jadwalquiz.prev_quiz', 'quiz.judul_quiz')->where('jadwalquiz.id','=',$id)->first();
         if ($modeljadwalquiz) {
             return response()->json([
                 'status' => 200,
                 'modeljadwalquiz' => $modeljadwalquiz,
+                'modeljadwalprevious' => $modeljadwalprevious,
             ]);
         } else {
             return response()->json([
@@ -118,6 +126,7 @@ class JadwalQuizController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // return $request->input('editquiz_sebelumnya');
         $validator = Validator::make($request->all(), [
             'editnama_quiz' => 'required',
             'edittanggal_mulai' => 'required',
@@ -136,17 +145,28 @@ class JadwalQuizController extends Controller
         } else {
             $modeljadwalquiz = Jadwal::find($id);
             if ($modeljadwalquiz) {
-                $modeljadwalquiz->update([
-                    'quiz_id' => $request->input('editnama_quiz'),
-                    'tanggal_mulai' => $request->input('edittanggal_mulai'),
-                    'tanggal_berakhir' => $request->input('edittanggal_berakhir'),
-                    'waktu_quiz' => $request->input('editwaktu_quiz'),
-                    'tampilan_soal' => $request->input('edittampilan_soal'),
-                    'kelas_id' => $request->input('editkelas'),
-                    'user_id' => json_encode($request->input('edittentor')),
-
-
-                ]);
+                if ($request->input('editquiz_sebelumnya') == null) {
+                    $modeljadwalquiz->update([
+                        'quiz_id' => $request->input('editnama_quiz'),
+                        'tanggal_mulai' => $request->input('edittanggal_mulai'),
+                        'tanggal_berakhir' => $request->input('edittanggal_berakhir'),
+                        'waktu_quiz' => $request->input('editwaktu_quiz'),
+                        'tampilan_soal' => $request->input('edittampilan_soal'),
+                        'kelas_id' => $request->input('editkelas'),
+                        'user_id' => json_encode($request->input('edittentor')),
+                    ]);
+                }else {
+                    $modeljadwalquiz->update([
+                        'quiz_id' => $request->input('editnama_quiz'),
+                        'tanggal_mulai' => $request->input('edittanggal_mulai'),
+                        'tanggal_berakhir' => $request->input('edittanggal_berakhir'),
+                        'waktu_quiz' => $request->input('editwaktu_quiz'),
+                        'tampilan_soal' => $request->input('edittampilan_soal'),
+                        'kelas_id' => $request->input('editkelas'),
+                        'user_id' => json_encode($request->input('edittentor')),
+                        'prev_quiz' => $request->input('editquiz_sebelumnya'),
+                    ]);
+                }
                 return response()->json([
                     'status' => 200,
                     'message' => "Data Berhasil Di Perbarui !!!",
@@ -184,5 +204,23 @@ class JadwalQuizController extends Controller
             ->get();
 
         return DataTables::of($jadwal)->make(true);
+    }
+    public function getQuiz(Request $request)
+    {
+        $currentDate = Carbon::now()->toDateString();
+        $query = $request->input('q'); // Ambil nilai pencarian dari parameter 'q'
+
+        $modelprevquiz = Jadwal::join('quiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')
+            ->select('jadwalquiz.id', 'jadwalquiz.updated_at', 'quiz.judul_quiz')
+            ->whereDate('jadwalquiz.updated_at', '=', $currentDate)
+            ->where(function($q) use ($query) {
+                // Tambahkan kondisi pencarian jika nilai pencarian ada
+                if ($query) {
+                    $q->where('quiz.judul_quiz', 'like', '%' . $query . '%');
+                }
+            })
+            ->get();
+
+        return response()->json($modelprevquiz);
     }
 }

@@ -16,5 +16,6 @@ class Pertanyaan extends Model
         'tipe_pertanyaan',
         'quiz_id',
         'point',
+        'order_column'
     ];
 }

@@ -254,7 +254,7 @@ class QuizController extends Controller
     public function quizSiswa()
     {
         $jumlahsoal = [];
-        $modelquiz = Quiz::select('quiz.id', 'quiz.judul_quiz', 'quiz.gambar_quiz', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.id as id_jadwal')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where('jadwalquiz.kelas_id','=',Auth::user()->userSiswa->kelas_id)->get();
+        $modelquiz = Quiz::select('quiz.id', 'quiz.judul_quiz', 'quiz.gambar_quiz', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.id as id_jadwal')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where('jadwalquiz.kelas_id','=',Auth::user()->userSiswa->kelas_id)->orderBy('jadwalquiz.id', 'asc')->get();
         foreach ($modelquiz as $key => $value) {
             $jumlahsoal[$key] = Pertanyaan::where('quiz_id', '=', $value->id)->get()->count();
         }
@@ -267,7 +267,7 @@ class QuizController extends Controller
     {
         $halaman = Jadwal::find($jadwal);
         // dd($halaman->tampilan_soal);
-        $quiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal]])->paginate($halaman->tampilan_soal);
+        $quiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal]])->orderBy('order_column','asc')->paginate($halaman->tampilan_soal);
         $pilihan = [];
         $cekstatus = $datawaktu = DetailWaktu::where([['user_id','=',Auth::user()->id],['quiz_id','=',$id],['jadwal_id','=',$jadwal]])->get()->count();
         // dd($cekstatus);
@@ -342,29 +342,29 @@ class QuizController extends Controller
         }
     }
 
-    public function totalnilai($id,$jadwal){
+    public function totalnilai(Request $request){
         $jawaban = 0;
         $hasil = HasilPilihan::join('jadwalquiz','hasilpilihan.jadwal_id','=','jadwalquiz.id')
         ->join('pertanyaan','hasilpilihan.pertanyaan_id','=','pertanyaan.id')
         ->join('jawabanpertanyaan', 'hasilpilihan.jawaban_id','=','jawabanpertanyaan.id')
         ->select('hasilpilihan.pertanyaan_id','hasilpilihan.jawaban_id','hasilpilihan.jadwal_id','jawabanpertanyaan.point')
-        ->where('hasilpilihan.jadwal_id','=',$jadwal)
-        ->where('jadwalquiz.quiz_id','=',$id)
+        ->where('hasilpilihan.jadwal_id','=',$request->jadwal)
+        ->where('jadwalquiz.quiz_id','=',$request->id)
         ->where('hasilpilihan.user_id','=',Auth::user()->id)
         ->get();
-        $jumlah_soal = Pertanyaan::join('quiz','pertanyaan.quiz_id','=','quiz.id')->join('jadwalquiz','jadwalquiz.quiz_id','=','quiz.id')->where([['quiz.id','=',$id],['jadwalquiz.id','=',$jadwal]])->get()->count();
+        $jumlah_soal = Pertanyaan::join('quiz','pertanyaan.quiz_id','=','quiz.id')->join('jadwalquiz','jadwalquiz.quiz_id','=','quiz.id')->where([['quiz.id','=',$request->id],['jadwalquiz.id','=',$request->jadwal]])->get()->count();
         foreach ($hasil as $key => $value) {
             if ($value->point == 1) {
                 $jawaban++;
             }
         }
-        if (!cekQuiz($id,Auth::user()->id,$jadwal)) {
+        if (!cekQuiz($request->id,Auth::user()->id,$request->jadwal)) {
             $jawaban_benar = collect($jawaban);
             $total = (($jawaban_benar[0]/$jumlah_soal)*100);
             $modeldetailhasil = new DetailHasil;
             $modeldetailhasil->user_id = Auth::user()->id;
-            $modeldetailhasil->quiz_id = $id;
-            $modeldetailhasil->jadwal_id = $jadwal;
+            $modeldetailhasil->quiz_id = $request->id;
+            $modeldetailhasil->jadwal_id = $request->jadwal;
             $modeldetailhasil->totals = $total;
             $modeldetailhasil->save();
         }

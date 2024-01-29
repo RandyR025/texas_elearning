@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'cek_login' => \App\Http\Middleware\Cek_login::class,
         'redirect.previous' => \App\Http\Middleware\RedirectPreviousPage::class,
+        'translate' => \App\Http\Middleware\PreventTranslation::class,
     ];
 }

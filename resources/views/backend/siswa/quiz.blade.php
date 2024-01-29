@@ -19,13 +19,24 @@ Quiz
         overflow: hidden;
     }
 
+    @media (min-width: 800px) {
+        .square-card .card {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 75% !important;
+        /* Set tinggi card menjadi 100% */
+    }
+    }
     .square-card .card {
         position: absolute;
         top: 0;
         bottom: 0;
         left: 0;
         right: 0;
-        height: 75%;
+        height: 80%;
         /* Set tinggi card menjadi 100% */
     }
 
@@ -77,8 +88,12 @@ Quiz
                                     <a href="#" class="btn btn-primary btn-block disabled">Belum Di Buka</a>
                                 <?php } elseif ($now > $quiz->tanggal_berakhir) { ?>
                                     <a href="#" class="btn btn-primary btn-block disabled">Sudah Lewat</a>
-                                <?php } elseif ($now >= $quiz->tanggal_mulai && $now <= $quiz->tanggal_berakhir) { ?>
+                                <?php } elseif ($now >= $quiz->tanggal_mulai && $now <= $quiz->tanggal_berakhir) { 
+                                    if (cekQuizPrevious(Auth::user()->id, $quiz->id_jadwal)) {?>
                                     <a href="{{route('quizsiswadetail',[$quiz->id,$quiz->id_jadwal])}}" class="btn btn-primary btn-block">Mulai Ujian</a>
+                                    <?php } else {?>
+                                        <a href="#" class="btn btn-primary btn-block disabled">Kerjakan Ujian Sebelumnya</a>
+                                    <?php } ?>
                                 <?php } ?>
                             <?php } ?>
                         </div>

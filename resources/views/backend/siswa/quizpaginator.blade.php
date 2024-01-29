@@ -1,4 +1,4 @@
-<div class="white-container">
+<div class="white-container" data-quiz-id="{{ $quiz[0]->quiz_id }}" data-jadwal="{{ $quiz[0]->jadwal }}">
     @php $questionNum = $quiz->firstItem(); @endphp
     @php $choicenum = 1; @endphp
     @foreach($quiz as $key => $data)
@@ -19,7 +19,7 @@
         @endif
         @if($data->tipe_pertanyaan == "Teks")
         <div class="input-group">
-            <textarea name="textjawaban" id="textjawaban{{$jawaban->id}}" data-jawaban-id="{{$jawaban->id}}" cols="30" rows="10" class="form-control col-md-12" oninput="textSavedata(this,'<?= $jawaban->id; ?>','<?= $jawaban->pertanyaan_id; ?>','<?= $data->jadwal; ?>');"><?= hasilText($jawaban->id, Auth::user()->id,$data->jadwal)?></textarea>
+            <textarea name="textjawaban" id="textjawaban{{$jawaban->id}}" data-jawaban-id="{{$jawaban->id}}" data-pertanyaan-id="{{$jawaban->pertanyaan_id}}" data-jadwal-id="{{$data->jadwal}}" cols="30" rows="10" class="form-control col-md-12" data-cek="<?= cekhasilText($jawaban->id, Auth::user()->id, $data->jadwal) ?>"><?= hasilText($jawaban->id, Auth::user()->id, $data->jadwal) ?></textarea>
         </div>
         <div>
             <p id="wordCount{{$jawaban->id}}">Jumlah kata: 0</p>
@@ -28,18 +28,16 @@
         @endif
         @endforeach
     </ul>
-    @if($jumlahsoal == $quiz->firstItem())
+    @endforeach
+    @if($quiz->currentPage() == $quiz->lastPage())
     <div class="row" style="margin-top: 20px;">
         <div class="col-12 text-center">
-            <a href="{{ route('totalnilai', [$data->quiz_id, $data->jadwal])}}">
-                <button class="btn btn-outline-primary btn-icon btn-icon-end sw-25 w-50">
-                    <span>Finish</span>
-                </button>
-            </a>
+            <button class="btn btn-outline-primary btn-icon btn-icon-end sw-25 w-50" onclick="finishAndClearCookies()">
+                <span>Finish</span>
+            </button>
         </div>
     </div>
     @endif
-    @endforeach
 </div>
 <div class="pagination-container">
     {!! $quiz->onEachSide(1)->links() !!}

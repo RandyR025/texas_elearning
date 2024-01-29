@@ -209,7 +209,7 @@ class PertanyaanController extends Controller
 
     public function getData($id)
     {
-        $siswa = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan')->where('pertanyaan.quiz_id', '=', $id)
+        $siswa = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan')->where('pertanyaan.quiz_id', '=', $id)->orderBy('order_column','asc')
             ->get();
 
         return DataTables::of($siswa)->make(true);
@@ -222,5 +222,17 @@ class PertanyaanController extends Controller
             'status' => 200,
             'message' => 'Data Berhasil Di Hapus !!!',
         ]);
+    }
+
+    public function updateOrder(Request $request)
+    {
+        $newOrder = $request->input('order');
+
+        foreach ($newOrder as $index => $itemId) {
+            // Update urutan berdasarkan id atau kunci unik lainnya
+            Pertanyaan::where('id', $itemId)->update(['order_column' => $index + 1]);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

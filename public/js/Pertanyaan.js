@@ -5,7 +5,7 @@ var pageID = urlParts[urlParts.length - 1];
 var pertanyaantable = $("#datapertanyaan").DataTable({
     processing: true,
     serverSide: true,
-    paging: true,
+    paging: false,
     lengthChange: false,
     searching: true,
     ordering: true,
@@ -62,6 +62,31 @@ var pertanyaantable = $("#datapertanyaan").DataTable({
     createdRow: function (row, data, dataIndex) {
         // Menambahkan kelas untuk memastikan nomor urut sesuai dengan urutan DataTable
         $(row).find('td:eq(0)').addClass('text-center');
+        $(row).attr('data-row-id', data.id);
+    }
+});
+$("#datapertanyaan tbody").sortable({
+    items: "tr",
+    cursor: "move",
+    axis: "y",
+    update: function(event, ui) {
+        var newOrder = $(this).sortable('toArray', { attribute: 'data-row-id' });
+
+        $.ajax({
+            url: '/updateOrder',
+            type: 'POST',
+            data: { order: newOrder },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                // Handle response from the server if needed
+                pertanyaantable.ajax.reload();
+            },
+            error: function(error) {
+                // Handle error if needed
+            }
+        });
     }
 });
 /* Menampilkan Data */

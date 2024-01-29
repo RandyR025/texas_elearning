@@ -148,6 +148,34 @@ $(document).on("click", ".edit_datajadwalquiz", function (e) {
                 $("#editkelas")
                     .val(response.modeljadwalquiz.kelas_id)
                     .trigger("change");
+                $("#editquiz_sebelumnya")
+                    .val(response.modeljadwalquiz.prev_quiz)
+                    .trigger("change");
+                
+
+                $('#editquiz_sebelumnya').select2({
+                    theme: 'bootstrap4',
+                    ajax: {
+                        url: '/getquiz',
+                        dataType: 'json',
+                        processResults: function(modelprevquiz){
+                            return {
+                                results: $.map(modelprevquiz, function(item){
+                                    return { id: item.id, text: item.judul_quiz };
+                                })
+                            };
+                        }
+                    },
+                    initSelection: function (element, callback) {
+                        if (!response.modeljadwalquiz.prev_quiz) {
+                            // If not available, set the default option as selected
+                            callback({ id: '', text: 'Pilih Quiz' });
+                        } else {
+                            // If available, set the selected option based on the response
+                            callback({ id: response.modeljadwalprevious.id, text: response.modeljadwalprevious.judul_quiz });
+                        }
+                    }
+                });
                 var user_ids = JSON.parse(response.modeljadwalquiz.user_id);
                 var selectedValues = [];
 
@@ -274,4 +302,60 @@ function resetselect2() {
     $(".kelas").select2({
         theme: "bootstrap4",
     });
+    $(".quiz_sebelumnya").select2("destroy");
+    $(".quiz_sebelumnya").select2({
+        theme: "bootstrap4",
+    });
+    initQuizSebelumnyaSelect2();
 }
+
+
+// $(document).on("click", ".quiz_sebelumnya", function (e) {
+//     e.preventDefault();
+//     $.ajax({
+//         url: '/getquiz',
+//         type: "GET",
+//         dataType: "json",
+//         success:function(response) {
+//             // Hapus opsi sebelum menambahkan yang baru
+//             $('select[name="quiz_sebelumnya"]').empty().append('<option hidden>Pilih Quiz</option>'); 
+
+//             $.each(response.quiz, function (key, value) {
+//                 $('select[name="quiz_sebelumnya"]').append('<option value="'+ value.id +'">' + value.judul_quiz + '</option>');
+//             });
+//         },
+//         error:function(xhr, status, error) {
+//             console.error('Gagal mengambil data quiz: ' + status + ' - ' + error);
+//         }
+//     });
+// });
+
+function initQuizSebelumnyaSelect2() {
+    $('#quiz_sebelumnya').select2({
+        theme: 'bootstrap4',
+        ajax: {
+            url: '/getquiz',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term, // Parameter pencarian yang dikirim ke server
+                    page: params.page
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: $.map(data, function (item) {
+                        return { id: item.id, text: item.judul_quiz };
+                    })
+                };
+            },
+            cache: true
+        },
+    });
+}
+$(document).ready(function () {
+    initQuizSebelumnyaSelect2();
+});
+
+

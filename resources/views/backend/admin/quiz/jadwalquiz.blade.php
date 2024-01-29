@@ -84,6 +84,14 @@ Data Jadwal Quiz
                                             <input type="text" class="form-control" id="tampilan_soal" placeholder="Tampilan Soal" name="tampilan_soal" oninput="validateInput(this)">
                                             <span class="text-danger error-text tampilan_soal_error"></span>
                                         </div>
+                                        <div class="form-group">
+                                            <label>Quiz Sebelumnya</label>
+                                            <select class="form-control quiz_sebelumnya" style="width: 100%;" name="quiz_sebelumnya" id="quiz_sebelumnya">
+                                                <!-- <option hidden>Pilih Quiz</option> -->
+                                                <option value="" selected>Pilih Quiz</option>
+                                            </select>
+                                            <span class="text-danger error-text quiz_sebelumnya_error"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -201,6 +209,13 @@ Data Jadwal Quiz
                                                 <input type="text" class="form-control" id="edittampilan_soal" placeholder="Waktu Quiz" name="edittampilan_soal" oninput="validateInput(this)">
                                                 <span class="text-danger error-text edittampilan_soal_error"></span>
                                             </div>
+                                            <div class="form-group">
+                                                <label>Quiz Sebelumnya</label>
+                                                <select class="form-control editquiz_sebelumnya" style="width: 100%;" name="editquiz_sebelumnya" id="editquiz_sebelumnya">
+                                                    <option hidden>Pilih Quiz</option>
+                                                </select>
+                                                <span class="text-danger error-text quiz_sebelumnya_error"></span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -251,6 +266,12 @@ Data Jadwal Quiz
     $('.editkelas').select2({
         theme: 'bootstrap4'
     })
+    // $('.quiz_sebelumnya').select2({
+    //     theme: 'bootstrap4'
+    // })
+    // $('.editquiz_sebelumnya').select2({
+    //     theme: 'bootstrap4'
+    // })
 
     function validateInput(input) {
         input.value = input.value.replace(/[^0-9]/g, '');
