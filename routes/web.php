@@ -60,8 +60,11 @@ Route::group(['middleware' => ['auth','web']], function () {
         Route::get('/datakategoriquiz/data', [KategoriQuizController::class, 'getData'])->name('datakategoriquiz.data');
         Route::post('/datakategoriquiz/tambah', [KategoriQuizController::class, 'store'])->name('datakategoriquiz.tambah');
         Route::get('/datakategoriquiz/edit/{id}', [KategoriQuizController::class, 'edit'])->name('datakategoriquiz.edit');
+        Route::get('/dataskorquiz/edit/{id}', [KategoriQuizController::class, 'editskor'])->name('dataskorquiz.edit');
         Route::post('/datakategoriquiz/update/{id}', [KategoriQuizController::class, 'update'])->name('datakategoriquiz.update');
         Route::delete('/datakategoriquiz/delete/{id}', [KategoriQuizController::class, 'destroy']);
+        Route::delete('/dataskor/delete/{id}', [KategoriQuizController::class, 'skordelete'])->name('dataskor.delete');
+        Route::post('/dataskor/update/{id}', [KategoriQuizController::class, 'skorupdate'])->name('dataskor.update');
         /* End Data Kategori */
 
         /* Data Kelas */

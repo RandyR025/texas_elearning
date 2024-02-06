@@ -66,10 +66,10 @@
     display: inline-block;
 }
 
-.chord::before {
+.chord::after {
     content: attr(data-chord);
     position: absolute;
-    top: -1em; /* Sesuaikan ini untuk menyesuaikan letak huruf A */
+    top: 1em; /* Sesuaikan ini untuk menyesuaikan letak huruf A */
     left: 50%;
     transform: translateX(-50%);
     font-weight: bold;

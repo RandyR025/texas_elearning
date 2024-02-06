@@ -18,6 +18,10 @@ function handleClick(myRadio, myPertanyaan, myTanggal) {
         data: s,
         success: function (data) {
             console.log(data);
+            var questionBox = $(".question-box[data-pertanyaan-id='" + pengisianID + "']");
+            
+            // Hapus kelas bg-light dan tambahkan kelas bg-success
+            questionBox.removeClass("bg-light").addClass("bg-success");
         },
     });
 }

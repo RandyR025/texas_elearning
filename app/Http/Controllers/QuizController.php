@@ -11,6 +11,7 @@ use App\Models\Jawaban;
 use App\Models\KategoriQuiz;
 use App\Models\Pertanyaan;
 use App\Models\Quiz;
+use App\Models\SettingSkor;
 use App\Models\Tentor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -29,8 +30,8 @@ class QuizController extends Controller
     public function index()
     {
         $modelkategori = KategoriQuiz::all();
-        $modeltentor = Tentor::join('users','tentor.user_id','=','users.id')->where('users.level_id','=',2)->get();
-        return view('backend/admin/quiz.quiz', compact('modelkategori','modeltentor'));
+        $modeltentor = Tentor::join('users', 'tentor.user_id', '=', 'users.id')->where('users.level_id', '=', 2)->get();
+        return view('backend/admin/quiz.quiz', compact('modelkategori', 'modeltentor'));
     }
 
     /**
@@ -184,7 +185,7 @@ class QuizController extends Controller
                         'gambar_quiz' => $filename,
 
                     ]);
-                }elseif ($request->hasFile('editaudio_quiz')) {
+                } elseif ($request->hasFile('editaudio_quiz')) {
                     File::delete('audios_quiz/' . $modelquiz->audio_quiz);
                     $file = $request->file('editaudio_quiz');
                     $extension = $file->getClientOriginalExtension();
@@ -254,7 +255,7 @@ class QuizController extends Controller
     public function quizSiswa()
     {
         $jumlahsoal = [];
-        $modelquiz = Quiz::select('quiz.id', 'quiz.judul_quiz', 'quiz.gambar_quiz', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.id as id_jadwal')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where('jadwalquiz.kelas_id','=',Auth::user()->userSiswa->kelas_id)->orderBy('jadwalquiz.id', 'asc')->get();
+        $modelquiz = Quiz::select('quiz.id', 'quiz.judul_quiz', 'quiz.gambar_quiz', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.id as id_jadwal')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where('jadwalquiz.kelas_id', '=', Auth::user()->userSiswa->kelas_id)->orderBy('jadwalquiz.id', 'asc')->get();
         foreach ($modelquiz as $key => $value) {
             $jumlahsoal[$key] = Pertanyaan::where('quiz_id', '=', $value->id)->get()->count();
         }
@@ -267,10 +268,15 @@ class QuizController extends Controller
     {
         $halaman = Jadwal::find($jadwal);
         // dd($halaman->tampilan_soal);
-        $quiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal]])->orderBy('order_column','asc')->paginate($halaman->tampilan_soal);
+        $quiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal', 'quiz.audio_quiz')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal],['pertanyaan.tipe_pertanyaan','!=','Custom Banner']])->orderBy('order_column', 'asc')->paginate($halaman->tampilan_soal);
+        $jumlahpertanyaan = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal]])->orderBy('order_column', 'asc')->count();
+        // dd($jumlahpertanyaan);
+        $kotakquiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal],['pertanyaan.tipe_pertanyaan','!=','Custom Banner']])->orderBy('order_column', 'asc')->get();
+        $custom_banner = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal', 'quiz.audio_quiz')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal],['pertanyaan.tipe_pertanyaan','=','Custom Banner']])->orderBy('order_column', 'asc')->get();
         $pilihan = [];
-        $cekstatus = $datawaktu = DetailWaktu::where([['user_id','=',Auth::user()->id],['quiz_id','=',$id],['jadwal_id','=',$jadwal]])->get()->count();
+        $cekstatus = $datawaktu = DetailWaktu::where([['user_id', '=', Auth::user()->id], ['quiz_id', '=', $id], ['jadwal_id', '=', $jadwal]])->get()->count();
         // dd($cekstatus);
+        $kategori = KategoriQuiz::join('quiz','quiz.kategori_id','=','quiz_kategori.id')->where('quiz.id','=',$id)->first();
         if ($cekstatus == 0) {
             $waktu_quiz = Jadwal::find($jadwal);
             $waktu = new DetailWaktu;
@@ -280,16 +286,16 @@ class QuizController extends Controller
             $waktu->jadwal_id = $jadwal;
             $waktu->save();
         }
-        $datawaktu = DetailWaktu::where([['user_id','=',Auth::user()->id],['quiz_id','=',$id],['jadwal_id','=',$jadwal]])->first();
+        $datawaktu = DetailWaktu::where([['user_id', '=', Auth::user()->id], ['quiz_id', '=', $id], ['jadwal_id', '=', $jadwal]])->first();
         $jumlahsoal = Pertanyaan::where('quiz_id', '=', $id)->get()->count();
         foreach ($quiz as $key => $value) {
             $pilihan[$key] = Jawaban::where('pertanyaan_id', '=', $value->id)->get();
         }
         if ($request->ajax()) {
-            return view('backend/siswa.quizpaginator', compact('quiz', 'pilihan', 'datawaktu','jumlahsoal'));
+            return view('backend/siswa.quizpaginator', compact('quiz', 'pilihan', 'datawaktu', 'jumlahsoal', 'kotakquiz','halaman','kategori','custom_banner'));
         }
         // dd($pilihan);
-        return view('backend/siswa.detailquiz', compact('quiz', 'pilihan', 'datawaktu','jumlahsoal'));
+        return view('backend/siswa.detailquiz', compact('quiz', 'pilihan', 'datawaktu', 'jumlahsoal', 'kotakquiz','halaman','kategori','custom_banner'));
     }
 
     public function HasilPilihanQuiz(Request $request)
@@ -342,25 +348,32 @@ class QuizController extends Controller
         }
     }
 
-    public function totalnilai(Request $request){
+    public function totalnilai(Request $request)
+    {
         $jawaban = 0;
-        $hasil = HasilPilihan::join('jadwalquiz','hasilpilihan.jadwal_id','=','jadwalquiz.id')
-        ->join('pertanyaan','hasilpilihan.pertanyaan_id','=','pertanyaan.id')
-        ->join('jawabanpertanyaan', 'hasilpilihan.jawaban_id','=','jawabanpertanyaan.id')
-        ->select('hasilpilihan.pertanyaan_id','hasilpilihan.jawaban_id','hasilpilihan.jadwal_id','jawabanpertanyaan.point')
-        ->where('hasilpilihan.jadwal_id','=',$request->jadwal)
-        ->where('jadwalquiz.quiz_id','=',$request->id)
-        ->where('hasilpilihan.user_id','=',Auth::user()->id)
-        ->get();
-        $jumlah_soal = Pertanyaan::join('quiz','pertanyaan.quiz_id','=','quiz.id')->join('jadwalquiz','jadwalquiz.quiz_id','=','quiz.id')->where([['quiz.id','=',$request->id],['jadwalquiz.id','=',$request->jadwal]])->get()->count();
+        $hasil = HasilPilihan::join('jadwalquiz', 'hasilpilihan.jadwal_id', '=', 'jadwalquiz.id')
+            ->join('pertanyaan', 'hasilpilihan.pertanyaan_id', '=', 'pertanyaan.id')
+            ->join('jawabanpertanyaan', 'hasilpilihan.jawaban_id', '=', 'jawabanpertanyaan.id')
+            ->select('hasilpilihan.pertanyaan_id', 'hasilpilihan.jawaban_id', 'hasilpilihan.jadwal_id', 'jawabanpertanyaan.point')
+            ->where('hasilpilihan.jadwal_id', '=', $request->jadwal)
+            ->where('jadwalquiz.quiz_id', '=', $request->id)
+            ->where('hasilpilihan.user_id', '=', Auth::user()->id)
+            ->get();
+        $jumlah_soal = Pertanyaan::join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $request->id], ['jadwalquiz.id', '=', $request->jadwal]])->get()->count();
         foreach ($hasil as $key => $value) {
             if ($value->point == 1) {
                 $jawaban++;
             }
         }
-        if (!cekQuiz($request->id,Auth::user()->id,$request->jadwal)) {
+        if (!cekQuiz($request->id, Auth::user()->id, $request->jadwal)) {
             $jawaban_benar = collect($jawaban);
-            $total = (($jawaban_benar[0]/$jumlah_soal)*100);
+            // dd($jawaban_benar);
+            $modelskor = SettingSkor::join('quiz_kategori','skorsetting.kategori_id','=','quiz_kategori.id')->join('quiz','quiz.kategori_id','=','quiz_kategori.id')->where('quiz.id','=',$request->id)->where('skorsetting.jumlah_benar','=',$jawaban_benar)->first();
+            if (isset($modelskor)) {
+                $total = $modelskor->skor;
+            }else {
+                $total = (($jawaban_benar[0] / $jumlah_soal) * 100);
+            }
             $modeldetailhasil = new DetailHasil;
             $modeldetailhasil->user_id = Auth::user()->id;
             $modeldetailhasil->quiz_id = $request->id;
@@ -373,10 +386,16 @@ class QuizController extends Controller
     }
     public function cekhasil(Request $request, $id, $jadwal)
     {
-        $modelhasil = DetailHasil::where([['user_id','=',Auth::user()->id],['quiz_id','=',$id],['jadwal_id','=',$jadwal]])->get()->count();
+        $modelhasil = DetailHasil::where([['user_id', '=', Auth::user()->id], ['quiz_id', '=', $id], ['jadwal_id', '=', $jadwal]])->get()->count();
         return response()->json([
             'user' => $modelhasil,
             'message' => "Berhasil Cek Hasil",
         ]);
+    }
+
+    public function getAnswerStatus($questionId, $userId, $jadwal)
+    {
+        $isAnswered = cekhasilPilihan($questionId, $userId, $jadwal);
+        return response()->json(['isAnswered' => $isAnswered]);
     }
 }

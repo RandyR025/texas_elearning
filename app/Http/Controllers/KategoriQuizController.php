@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\KategoriQuiz;
 use App\Models\Kelas;
 use App\Models\Kursus;
+use App\Models\SettingSkor;
 use Illuminate\Http\Request;
 use DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -97,6 +98,21 @@ class KategoriQuizController extends Controller
         }
     }
 
+    public function editskor($id){
+        $modeljawaban = SettingSkor::where('kategori_id', $id)->get();
+        if ($modeljawaban) {
+            return response()->json([
+                'status' => 200,
+                'modeljawaban' => $modeljawaban,
+            ]);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Data Not Found',
+            ]);
+        }
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -140,6 +156,28 @@ class KategoriQuizController extends Controller
         }
     }
 
+    public function skorupdate(Request $request, $id){
+        // return $request;
+        if ($request->input('editjumlahjawaban')) {
+            foreach ($request->input('editjumlahjawaban') as $key => $jumlah) {
+                $modeljawaban = SettingSkor::where('id', $request->id[$key]); // Sesuaikan dengan model Anda
+                $modeljawaban->update([
+                    'jumlah_benar' => $jumlah,
+                    'skor' => $request->input('editskor')[$key],
+                ]);
+            }
+        }
+        if ($request->input('editjumlahjawabantambah')) {
+            foreach ($request->input('editjumlahjawabantambah') as $key => $jumlah) {
+                $modeljawaban = new SettingSkor; // Sesuaikan dengan model Anda
+                $modeljawaban->jumlah_benar = $jumlah;
+                $modeljawaban->skor = $request->input('editskortambah')[$key];
+                $modeljawaban->kategori_id = $id;
+                $modeljawaban->save();
+            }
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -149,6 +187,15 @@ class KategoriQuizController extends Controller
     public function destroy($id)
     {
         KategoriQuiz::find($id)->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'Data Berhasil Di Hapus !!!',
+        ]);
+    }
+
+    public function skordelete($id)
+    {
+        SettingSkor::find($id)->delete();
         return response()->json([
             'status' => 200,
             'message' => 'Data Berhasil Di Hapus !!!',

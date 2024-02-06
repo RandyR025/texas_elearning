@@ -4,6 +4,7 @@ use App\Models\DetailHasil;
 use App\Models\HasilPilihan;
 use App\Models\HasilText;
 use App\Models\Jadwal;
+use App\Models\Pertanyaan;
 
 function hasilPilihan($pilihan,$user,$tanggal){
     $query = HasilPilihan::where([
@@ -17,6 +18,22 @@ function hasilPilihan($pilihan,$user,$tanggal){
         return false;
     }
 }
+function cekhasilPilihan($pertanyaan,$user,$tanggal){
+    $query = HasilPilihan::where([
+        ['user_id','=',$user],
+        ['pertanyaan_id','=',$pertanyaan],
+        ['jadwal_id','=',$tanggal],
+    ])->count();
+    if ($query == 1) {
+        return true;
+    }else {
+        return false;
+    }
+}
+// function nomorsoal($id,$jadwal){
+//     $kotakquiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal]])->orderBy('order_column', 'asc')->get();
+//     return $kotakquiz;
+// }
 function cekQuiz($quiz, $user, $jadwal){
     $query = DetailHasil::where([
         ['user_id','=',$user],
@@ -57,12 +74,39 @@ function hasilText($jawaban,$user,$tanggal){
         return $hasiltext;
     }
 }
-function cekhasilText($jawaban,$user,$tanggal){
+function cekhasilTeks($pertanyaan,$user,$tanggal){
     $query = HasilText::where([
         ['user_id','=',$user],
-        ['jawaban_id','=',$jawaban],
+        ['pertanyaan_id','=',$pertanyaan],
         ['jadwal_id','=',$tanggal],
     ])->count();
-    // dd($query->jawaban);
-    return $query;
+    $query2 = HasilText::where([
+        ['user_id','=',$user],
+        ['pertanyaan_id','=',$pertanyaan],
+        ['jadwal_id','=',$tanggal],
+    ])->first();
+    if ($query == 1 && $query2->jawaban !== null) {
+        return true;
+    }else {
+        return false;
+    }
 }
+// function cekhasilText($jawaban,$user,$tanggal){
+//     $query = HasilText::where([
+//         ['user_id','=',$user],
+//         ['jawaban_id','=',$jawaban],
+//         ['jadwal_id','=',$tanggal],
+//     ])->count();
+//     $query2 = HasilText::where([
+//         ['user_id','=',$user],
+//         ['jawaban_id','=',$jawaban],
+//         ['jadwal_id','=',$tanggal],
+//     ])->first();
+//     if ($query == 1 && $query2->jawaban == null) {
+//         return 0;
+//     } elseif ($query == 1 && $query2->jawaban !== null) {
+//         return 1;
+//     } else {
+//         return 0;
+//     }
+// }

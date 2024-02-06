@@ -10,7 +10,32 @@ Quiz
 @endsection
 @section('css')
 <style>
+    .question-boxes {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
 
+    .question-box {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+
+    .bg-light {
+        background-color: #fff;
+    }
+
+    .bg-success {
+        background-color: #28a745;
+        color: #fff;
+    }
 </style>
 @endsection
 @section('content')
@@ -19,6 +44,10 @@ Quiz
         <div class="row">
             <div class="col-md-12">
                 <div class="box box-primary">
+                    <audio id="audioQuiz" controls>
+                        <source src="{{asset('audios_quiz/'.$quiz[0]->audio_quiz)}}" type="audio/mp3">
+                        Maaf, browser Anda tidak mendukung tag audio.
+                    </audio>
                     <div id="countdown" class="mb-2"></div>
                     <?php if (!cekQuiz($quiz[0]->quiz_id, Auth::user()->id, $quiz[0]->jadwal)) { ?>
                         <div class="box-body" id="datapertanyaan">
@@ -50,6 +79,9 @@ Quiz
             history.pushState({
                 page: page
             }, "", myurl);
+            $('html, body').animate({
+                scrollTop: 0
+            }, 'slow');
         });
 
         // Tangani perubahan state saat tombol navigasi browser digunakan
@@ -119,7 +151,7 @@ Quiz
             var wordCountDisplay = document.getElementById('wordCount' + jawabanId);
 
             var savedData = localStorage.getItem('textareaContent' + jawabanId + '_' + jadwalId);
-            if (savedData && datacek == 0) {
+            if (savedData) {
                 var parsedData = JSON.parse(savedData);
                 if (parsedData.expiration > new Date().getTime()) {
                     textarea.value = parsedData.content;
@@ -197,6 +229,89 @@ Quiz
     //         return words.length;
     //     }
     // }
+</script>
+<script>
+    function goToQuestion(questionNum) {
+        // Hitung halaman yang sesuai dengan nomor pertanyaan
+        var currentPage = Math.ceil(questionNum / {{$halaman->tampilan_soal}});
+
+        // Ambil URL halaman sesuai dengan nomor halaman
+        var url = "{{ route('quizsiswadetail', ['id' => $quiz[0]->quiz_id, 'jadwal' => $quiz[0]->jadwal]) }}" + "?page=" + currentPage;
+
+        // Kirim permintaan AJAX untuk memuat halaman
+        saveToDatabase();
+        getData(url);
+        history.pushState({
+            page: currentPage
+        }, "", url);
+
+        // Geser ke bagian atas halaman
+        $('html, body').animate({
+            scrollTop: 0
+        }, 'slow');
+    }
+</script>
+<script>
+    $(document).ready(function() {
+    // Membuat variabel untuk menyimpan posisi terakhir audio
+    var lastAudioPosition = 0;
+
+    // Mendapatkan elemen audio
+    var audio = document.getElementById("audioQuiz");
+
+    // Memeriksa apakah sudah ada nilai posisi yang disimpan di localStorage
+    if (localStorage.getItem("lastAudioPosition") !== null) {
+        // Mengambil nilai posisi terakhir dari localStorage
+        lastAudioPosition = parseFloat(localStorage.getItem("lastAudioPosition"));
+    }
+
+    // Menetapkan nilai posisi terakhir ke elemen audio
+    audio.currentTime = lastAudioPosition;
+
+    // Mendapatkan izin untuk menggunakan media perangkat
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(function(stream) {
+            // Pemutaran audio setelah mendapatkan izin
+            audio.play();
+        })
+        .catch(function(error) {
+            // Menangani kesalahan jika izin tidak diberikan
+            console.error('Tidak dapat memutar audio:', error);
+        });
+
+    // Menyimpan posisi audio saat halaman ditutup atau diperbarui
+    window.addEventListener("beforeunload", function() {
+        // Menyimpan posisi terakhir ke localStorage
+        localStorage.setItem("lastAudioPosition", audio.currentTime.toString());
+    });
+});
+// $(document).ready(function() {
+//         console.log('masuk');
+//         navigator.mediaDevices.getUserMedia({
+//                 audio: true
+//             })
+//             .then(function(stream) {
+//                 // Izin diberikan, Anda dapat memulai pemutaran audio
+//                 var audio = document.getElementById("audioQuiz");
+//                 audio.play();
+//             })
+//             .catch(function(error) {
+//                 // Izin tidak diberikan, berikan informasi kepada pengguna
+//                 console.error('Tidak dapat memutar audio:', error);
+//             });
+//     });
+if ('<?php echo $quiz[0]->audio_quiz  ?>') {
+    document.addEventListener('keydown', function (event) {
+            // Check if the key pressed is the 'F5' key (keyCode 116)
+            if (event.keyCode === 116) {
+                // Munculkan peringatan alert
+                const confirmationMessage = 'Jika anda merefresh halaman maka audio mulai dari awal dan waktu ujian tetap berlanjut, Anda yakin ?';
+                if (!confirm(confirmationMessage)) {
+                    event.preventDefault(); // Mencegah refresh jika pengguna membatalkan peringatan
+                }
+            }
+        });
+}
 </script>
 @endsection
 @endsection

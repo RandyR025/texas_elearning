@@ -58,6 +58,7 @@ Data Kategori Quiz
                                     <th>Nama Kategori</th>
                                     <th>Deskripsi</th>
                                     <th>Edit</th>
+                                    <th>Skor</th>
                                     <th>Hapus</th>
                                 </tr>
                             </thead>
@@ -107,6 +108,47 @@ Data Kategori Quiz
                     </div>
                 </div>
             </div>
+
+            <div class="modal fade" id="editpertanyaanmodal">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header bg-blue">
+                            <h4 class="modal-title">Update Data Skor</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form action="" id="dataskoredit_form">
+                            @csrf
+                            <div class="modal-body">
+                                <div class="card-body">
+                                    <input type="hidden" name="hidden_id" id="hidden_id">
+                                    <span class="text-danger error-text editpertanyaan_error"></span>
+                                    <div class="form-group" id="text_inputedit" hidden>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control col-md-1" id="edittextjumlahjawaban" name="edittextjumlahjawaban" placeholder="Bobot" value="0" oninput="validasiInputTextedit()">
+                                            <textarea name="edittextskor" id="edittextskor" cols="30" rows="2" class="form-control col-5"></textarea>
+                                            <input type="hidden" name="textid" id="textid">
+                                            <input type="hidden" name="tipe" id="tipe">
+                                        </div>
+                                    </div>
+                                    <div class="form-group form1" id="tambahpilihanedit">
+                                        <button type="button" class="btn btn-success" onclick="tambahInputedit()">Tambah Jawaban</button>
+                                    </div>
+
+                                    <div id="container-input-d">
+                                        <!-- Input dinamis akan ditambahkan di sini -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between bg-red">
+                                <button type="button" class="btn btn-primary bg-white" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary bg-white update" id="submitBtnedit">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <!-- Edit Modal -->
         </div>
 
@@ -115,5 +157,44 @@ Data Kategori Quiz
 </div>
 @section('js')
 <script src="{{asset('js/KategoriQuiz.js')}}"></script>
+<script>
+    function tambahInputedit() {
+        var nomorInput = $('#container-input-d .form-group').length + 1;
+
+        var inputBaru = '<div class="form-group">' +
+            '<div class="input-group">' +
+            '<input type="text" class="form-control col-md-1" id="editjumlahjawaban' + nomorInput + '" name="editjumlahjawabantambah[]" placeholder="Bobot" oninput="validasiInputedit(' + nomorInput + ')">' +
+            '<input type="text" class="form-control col-md-5" id="editskor' + nomorInput + '" name="editskortambah[]" oninput="validasiInputedit(' + nomorInput + ')">' +
+            '<span class="input-group-btn">' +
+            '<button type="button" class="btn btn-danger" onclick="hapusInput1(this)"><i class="fa fa-trash"></i></button>' +
+            '</span>' +
+            '</div>' +
+            '<span class="text-danger error-text jawaban' + nomorInput + '_error"></span>' +
+            '</div>';
+
+        $('#container-input-d').append(inputBaru);
+        $('#submitBtnedit').prop('disabled', true);
+    }
+    function hapusInput1(button) {
+        $(button).closest('.form-group').remove();
+    }
+    function validasiInputedit() {
+        var semuaInputTerisi = true;
+        $('[id^="editjumlahjawaban"]').each(function() {
+            var nomorInput = this.id.match(/\d+/)[0];
+            var bobotInput = $(this).val();
+            var jawabanInput = $('#editskor' + nomorInput).val();
+
+            $('.error-text.editjumlahjawaban' + nomorInput + '_error').text('');
+            $('.error-text.editskor' + nomorInput + '_error').text('');
+            if (bobotInput === '' || jawabanInput === '') {
+                semuaInputTerisi = false;
+                return false;
+            }
+        });
+        $('#submitBtnedit').prop('disabled', !semuaInputTerisi);
+        return semuaInputTerisi;
+    }
+</script>
 @endsection
 @endsection()
