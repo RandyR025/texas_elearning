@@ -30,6 +30,23 @@ function cekhasilPilihan($pertanyaan,$user,$tanggal){
         return false;
     }
 }
+function cekhasilPilihanAkhir($pertanyaan,$user,$tanggal){
+    $query = HasilPilihan::where([
+        ['user_id','=',$user],
+        ['pertanyaan_id','=',$pertanyaan],
+        ['jadwal_id','=',$tanggal],
+    ])->count();
+    $queryy = HasilPilihan::join('jawabanpertanyaan','hasilpilihan.jawaban_id','=','jawabanpertanyaan.id')->where([
+        ['user_id','=',$user],
+        ['hasilpilihan.pertanyaan_id','=',$pertanyaan],
+        ['jadwal_id','=',$tanggal],
+    ])->first();
+    if ($query == 1 && $queryy->point == 1) {
+        return true;
+    }else {
+        return false;
+    }
+}
 // function nomorsoal($id,$jadwal){
 //     $kotakquiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal]])->orderBy('order_column', 'asc')->get();
 //     return $kotakquiz;

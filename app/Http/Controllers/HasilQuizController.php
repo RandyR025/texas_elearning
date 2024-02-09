@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DetailHasil;
 use App\Models\Jadwal;
 use App\Models\Jawaban;
+use App\Models\KategoriQuiz;
 use App\Models\Pertanyaan;
 use App\Models\Quiz;
 use App\Models\Siswa;
@@ -171,17 +172,20 @@ class HasilQuizController extends Controller
         $modelhasilquiz = DetailHasil::where('detailhasil.id','=',$id)->first();
         $siswa = Siswa::where('siswa.user_id','=',$modelhasilquiz->user_id)->get();
         $halaman = Jadwal::find($modelhasilquiz->jadwal_id);
-        $quiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $modelhasilquiz->quiz_id], ['jadwalquiz.id', '=', $modelhasilquiz->jadwal_id]])->paginate($halaman->tampilan_soal);
+        $quiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $modelhasilquiz->quiz_id], ['jadwalquiz.id', '=', $modelhasilquiz->jadwal_id], ['pertanyaan.tipe_pertanyaan','!=','Custom Banner']])->orderBy('order_column', 'asc')->paginate($halaman->tampilan_soal);
         // dd($halaman);
+        $kotakquiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $modelhasilquiz->quiz_id], ['jadwalquiz.id', '=', $modelhasilquiz->jadwal_id],['pertanyaan.tipe_pertanyaan','!=','Custom Banner']])->orderBy('order_column', 'asc')->get();
+        $custom_banner = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal', 'quiz.audio_quiz','jawabanpertanyaan.jawaban')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->join('jawabanpertanyaan','jawabanpertanyaan.pertanyaan_id','=','pertanyaan.id')->where([['quiz.id', '=', $modelhasilquiz->quiz_id], ['jadwalquiz.id', '=', $modelhasilquiz->jadwal_id],['pertanyaan.tipe_pertanyaan','=','Custom Banner']])->orderBy('order_column', 'asc')->get();
+        $kategori = KategoriQuiz::join('quiz','quiz.kategori_id','=','quiz_kategori.id')->where('quiz.id','=',$modelhasilquiz->quiz_id)->first();
         $pilihan = [];
         $jumlahsoal = Pertanyaan::where('quiz_id', '=', $modelhasilquiz->quiz_id)->get()->count();
         foreach ($quiz as $key => $value) {
             $pilihan[$key] = Jawaban::where('pertanyaan_id', '=', $value->id)->get();
         }
         if ($request->ajax()) {
-            return view('backend/admin/quiz.hasilquizpaginator', compact('quiz', 'pilihan','jumlahsoal','modelhasilquiz','siswa'));
+            return view('backend/admin/quiz.hasilquizpaginator', compact('quiz', 'pilihan','jumlahsoal','modelhasilquiz','siswa','kotakquiz','halaman','kategori','custom_banner'));
         }
         // dd($pilihan);
-        return view('backend/admin/quiz.detailhasiljawaban', compact('quiz', 'pilihan','jumlahsoal','modelhasilquiz','siswa'));
+        return view('backend/admin/quiz.detailhasiljawaban', compact('quiz', 'pilihan','jumlahsoal','modelhasilquiz','siswa','kotakquiz','halaman','kategori','custom_banner'));
     }
 }

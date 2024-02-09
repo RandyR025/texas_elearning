@@ -69,7 +69,11 @@ Quiz
                             <h5 class="card-title">{{$quiz->judul_quiz}}</h5>
                         </div>
                         <div class="card-body text-center">
+                            @if(isset($quiz->gambar_quiz))
                             <img style="width: 50vh; height: 30vh" src="{{asset('images_quiz/'.$quiz->gambar_quiz)}}" alt="Gambar Matematika" class="img-fluid rounded">
+                            @else
+                            <img style="width: 50vh; height: 30vh" src="{{asset('assets/dist/img/logoOnly.png')}}" alt="Gambar Matematika" class="img-fluid rounded">
+                            @endif
                             <p class="card-text">
                                 <strong>Jumlah Soal:</strong> {{$jumlahsoal[$key]}}<br>
                                 <strong>Tanggal Mulai Ujian:</strong> {{strftime('%d %B %Y', strtotime($quiz->tanggal_mulai))}}<br>

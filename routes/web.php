@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GroupQuizController;
 use App\Http\Controllers\HandlerController;
 use App\Http\Controllers\HasilQuizController;
 use App\Http\Controllers\HasilQuizTentorController;
@@ -116,6 +117,16 @@ Route::group(['middleware' => ['auth','web']], function () {
         Route::delete('/datajadwalquiz/delete/{id}', [JadwalQuizController::class, 'destroy']);
         /* End Data Jadwal Quiz */
 
+        /* Data Group Quiz */
+        Route::get('/datagroupquiz', [GroupQuizController::class, 'index'])->name('datagroupquiz');
+        // Route::get('/getquiz', [GroupQuizController::class, 'getquiz'])->name('getquiz');
+        Route::get('/datagroupquiz/data', [GroupQuizController::class, 'getData'])->name('datagroupquiz.data');
+        Route::post('/datagroupquiz/tambah', [GroupQuizController::class, 'store'])->name('datagroupquiz.tambah');
+        Route::get('/datagroupquiz/edit/{id}', [GroupQuizController::class, 'edit'])->name('datagroupquiz.edit');
+        Route::post('/datagroupquiz/update/{id}', [GroupQuizController::class, 'update'])->name('datagroupquiz.update');
+        Route::delete('/datagroupquiz/delete/{id}', [GroupQuizController::class, 'destroy']);
+        /* End Data Jadwal Quiz */
+
         /* Data Hasil Quiz */
         Route::get('/datahasilquiz', [HasilQuizController::class, 'index'])->name('datahasilquiz');
         Route::get('/datahasilquiz/data', [HasilQuizController::class, 'getData'])->name('datahasilquiz.data');
@@ -126,6 +137,7 @@ Route::group(['middleware' => ['auth','web']], function () {
         Route::post('/datahasilquiz/update/{id}', [HasilQuizController::class, 'update'])->name('datahasilquiz.update');
         Route::delete('/datahasilquiz/delete/{id}', [HasilQuizController::class, 'destroy']);
         Route::get('/datahasilquiz/edit/{id}', [HasilQuizController::class, 'edit'])->name('datahasilquiz.edit');
+        // Route::get('/quizdetail/detail/{id}/{jadwal}', [HasilQuizController::class, 'Detail'])->name('quizdetail');
         /* End Data Hasil Quiz */
 
 

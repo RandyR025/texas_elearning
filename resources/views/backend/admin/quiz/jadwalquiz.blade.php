@@ -85,6 +85,16 @@ Data Jadwal Quiz
                                             <span class="text-danger error-text tampilan_soal_error"></span>
                                         </div>
                                         <div class="form-group">
+                                            <label>Group Quiz</label>
+                                            <select class="form-control group" style="width: 100%;" name="group" id="group">
+                                                <option selected="selected" value="">-- Pilih Group --</option>
+                                                @foreach($modelgroup as $group)
+                                                <option value="{{ $group->id }}">{{ $group->nama_group}}</option>
+                                                @endforeach
+                                            </select>
+                                            <span class="text-danger error-text group_error"></span>
+                                        </div>
+                                        <div class="form-group">
                                             <label>Quiz Sebelumnya</label>
                                             <select class="form-control quiz_sebelumnya" style="width: 100%;" name="quiz_sebelumnya" id="quiz_sebelumnya">
                                                 <!-- <option hidden>Pilih Quiz</option> -->
@@ -210,6 +220,16 @@ Data Jadwal Quiz
                                                 <span class="text-danger error-text edittampilan_soal_error"></span>
                                             </div>
                                             <div class="form-group">
+                                                <label>Group Quiz</label>
+                                                <select class="form-control editgroup" style="width: 100%;" name="editgroup" id="editgroup">
+                                                    <option selected="selected" value="">-- Pilih Group --</option>
+                                                    @foreach($modelgroup as $group)
+                                                    <option value="{{ $group->id }}">{{ $group->nama_group}}</option>
+                                                    @endforeach
+                                                </select>
+                                                <span class="text-danger error-text editgroup_error"></span>
+                                            </div>
+                                            <div class="form-group">
                                                 <label>Quiz Sebelumnya</label>
                                                 <select class="form-control editquiz_sebelumnya" style="width: 100%;" name="editquiz_sebelumnya" id="editquiz_sebelumnya">
                                                     <option hidden>Pilih Quiz</option>
@@ -264,6 +284,12 @@ Data Jadwal Quiz
         theme: 'bootstrap4'
     })
     $('.editkelas').select2({
+        theme: 'bootstrap4'
+    })
+    $('.group').select2({
+        theme: 'bootstrap4'
+    })
+    $('.editgroup').select2({
         theme: 'bootstrap4'
     })
     // $('.quiz_sebelumnya').select2({

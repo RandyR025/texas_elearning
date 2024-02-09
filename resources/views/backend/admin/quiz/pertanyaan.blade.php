@@ -33,6 +33,7 @@ Data Pertanyaan
                                 <select class="form-control tipe_pertanyaan" style="width: 50%;" name="tipe_pertanyaan" id="tipe_pertanyaan">
                                     <option value="Pilihan">Pilihan Ganda</option>
                                     <option value="Teks">Teks</option>
+                                    <option value="Custom Banner">Custom Banner</option>
                                 </select>
                                 <span class="text-danger error-text tipe_pertanyaan_error"></span>
                             </div>
@@ -98,6 +99,7 @@ Data Pertanyaan
                                         <select class="form-control edittipe_pertanyaan" style="width: 50%;" name="edittipe_pertanyaan" id="edittipe_pertanyaan">
                                             <option value="Pilihan">Pilihan Ganda</option>
                                             <option value="Teks">Teks</option>
+                                            <option value="Custom Banner">Custom Banner</option>
                                         </select>
                                         <span class="text-danger error-text edittipe_pertanyaan_error"></span>
                                     </div>
@@ -148,6 +150,12 @@ Data Pertanyaan
                 $('#text_input').prop("hidden", false);
                 $('#container-input-dinamis').empty();
                 $('#submitBtn').prop('disabled', false);
+            } else if (selectedValue == "Custom Banner") {
+                $('#tambahpilihan').prop("hidden", true);
+                $('#container-input-dinamis').prop("hidden", true);
+                $('#text_input').prop("hidden", false);
+                $('#container-input-dinamis').empty();
+                $('#submitBtn').prop('disabled', false);
             }
         });
         $("#edittipe_pertanyaan").change(function() {
@@ -161,6 +169,11 @@ Data Pertanyaan
                     tambahInputedit();
                 }
             } else if (selectedValue == "Teks") {
+                $('#tambahpilihanedit').prop("hidden", true);
+                $('#container-input-d').prop("hidden", true);
+                $('#text_inputedit').prop("hidden", false);
+                $('#submitBtnedit').prop('disabled', false);
+            } else if (selectedValue == "Custom Banner") {
                 $('#tambahpilihanedit').prop("hidden", true);
                 $('#container-input-d').prop("hidden", true);
                 $('#text_inputedit').prop("hidden", false);

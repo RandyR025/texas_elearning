@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GroupQuiz;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\Quiz;
@@ -25,8 +26,9 @@ class JadwalQuizController extends Controller
         $modelprevquiz = Jadwal::join('quiz','jadwalquiz.quiz_id','=','quiz.id')->select('jadwalquiz.id', 'jadwalquiz.updated_at', 'quiz.judul_quiz')->whereDate('jadwalquiz.updated_at','=',$currentDate)->get();
         // dd($modelprevquiz);
         $modelkelas = Kelas::all();
+        $modelgroup = GroupQuiz::all();
         $modeltentor = Tentor::join('users','tentor.user_id','=','users.id')->where('users.level_id','=',2)->get();
-        return view('backend/admin/quiz.jadwalquiz', compact('modelquiz','modeltentor','modelkelas','modelprevquiz'));
+        return view('backend/admin/quiz.jadwalquiz', compact('modelquiz','modeltentor','modelkelas','modelprevquiz','modelgroup'));
     }
 
     /**
@@ -71,6 +73,7 @@ class JadwalQuizController extends Controller
             $modeljadwalquiz->tampilan_soal = $request->input('tampilan_soal');
             $modeljadwalquiz->user_id = json_encode($request->input('tentor'));
             $modeljadwalquiz->kelas_id = $request->input('kelas');
+            $modeljadwalquiz->group_id = $request->input('group');
             $modeljadwalquiz->prev_quiz = $request->input('quiz_sebelumnya');
             $modeljadwalquiz->save();
 
@@ -154,6 +157,7 @@ class JadwalQuizController extends Controller
                         'tampilan_soal' => $request->input('edittampilan_soal'),
                         'kelas_id' => $request->input('editkelas'),
                         'user_id' => json_encode($request->input('edittentor')),
+                        'prev_quiz' => $request->input('editquiz_sebelumnya'),
                     ]);
                 }else {
                     $modeljadwalquiz->update([

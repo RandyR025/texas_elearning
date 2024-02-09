@@ -183,6 +183,17 @@ $(document).on("click", ".edit_datapertanyaantentor", function (e) {
                         $("#textid").val(response.modeljawaban[0].id);
 
                     }
+                }else if (response.modelpertanyaan.tipe_pertanyaan == "Custom Banner") {
+                    if (response.modeljawaban[0].jawaban == null) {
+                        $("#edittextbobot").val(response.modeljawaban[0].point);
+                        $("#edittextjawaban").val("");
+                        $("#textid").val(response.modeljawaban[0].id);
+                    }else{
+                        $("#edittextbobot").val(response.modeljawaban[0].point);
+                        $("#edittextjawaban").val(response.modeljawaban[0].jawaban);
+                        $("#textid").val(response.modeljawaban[0].id);
+
+                    }
                 }
                 
             }

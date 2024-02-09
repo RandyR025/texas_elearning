@@ -257,7 +257,7 @@ class QuizController extends Controller
         $jumlahsoal = [];
         $modelquiz = Quiz::select('quiz.id', 'quiz.judul_quiz', 'quiz.gambar_quiz', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.id as id_jadwal')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where('jadwalquiz.kelas_id', '=', Auth::user()->userSiswa->kelas_id)->orderBy('jadwalquiz.id', 'asc')->get();
         foreach ($modelquiz as $key => $value) {
-            $jumlahsoal[$key] = Pertanyaan::where('quiz_id', '=', $value->id)->get()->count();
+            $jumlahsoal[$key] = Pertanyaan::where([['quiz_id', '=', $value->id], ['tipe_pertanyaan', '!=', 'Custom Banner']])->get()->count();
         }
         $tanggal = Carbon::now('Asia/Jakarta');
         $now = $tanggal->toDateString();
@@ -272,7 +272,7 @@ class QuizController extends Controller
         $jumlahpertanyaan = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal]])->orderBy('order_column', 'asc')->count();
         // dd($jumlahpertanyaan);
         $kotakquiz = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal],['pertanyaan.tipe_pertanyaan','!=','Custom Banner']])->orderBy('order_column', 'asc')->get();
-        $custom_banner = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal', 'quiz.audio_quiz')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal],['pertanyaan.tipe_pertanyaan','=','Custom Banner']])->orderBy('order_column', 'asc')->get();
+        $custom_banner = Pertanyaan::select('pertanyaan.id', 'pertanyaan.pertanyaan', 'pertanyaan.tipe_pertanyaan', 'pertanyaan.quiz_id', 'jadwalquiz.id as jadwal', 'quiz.audio_quiz','jawabanpertanyaan.jawaban')->join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->join('jawabanpertanyaan','jawabanpertanyaan.pertanyaan_id','=','pertanyaan.id')->where([['quiz.id', '=', $id], ['jadwalquiz.id', '=', $jadwal],['pertanyaan.tipe_pertanyaan','=','Custom Banner']])->orderBy('order_column', 'asc')->get();
         $pilihan = [];
         $cekstatus = $datawaktu = DetailWaktu::where([['user_id', '=', Auth::user()->id], ['quiz_id', '=', $id], ['jadwal_id', '=', $jadwal]])->get()->count();
         // dd($cekstatus);
@@ -359,7 +359,7 @@ class QuizController extends Controller
             ->where('jadwalquiz.quiz_id', '=', $request->id)
             ->where('hasilpilihan.user_id', '=', Auth::user()->id)
             ->get();
-        $jumlah_soal = Pertanyaan::join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $request->id], ['jadwalquiz.id', '=', $request->jadwal]])->get()->count();
+        $jumlah_soal = Pertanyaan::join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $request->id], ['jadwalquiz.id', '=', $request->jadwal], ['pertanyaan.tipe_pertanyaan','!=','Custom Banner']])->get()->count();
         foreach ($hasil as $key => $value) {
             if ($value->point == 1) {
                 $jawaban++;

@@ -19,6 +19,7 @@ class Jadwal extends Model
         'waktu_quiz',
         'tampilan_soal',
         'user_id',
+        'group_id',
         'prev_quiz',
     ];
 }

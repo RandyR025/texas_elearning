@@ -76,8 +76,8 @@
                         <p>Data Kelas</p>
                     </a>
                 </li>
-                <li class="nav-item {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan')||Route::is('datahasilquiz') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan')||Route::is('datahasilquiz') ? 'active' : '' }}">
+                <li class="nav-item {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan')||Route::is('datahasilquiz')||Route::is('datagroupquiz') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan')||Route::is('datahasilquiz')||Route::is('datagroupquiz') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-chart-pie"></i>
                         <p>
                             Quizezz
@@ -95,6 +95,12 @@
                             <a href="{{route('dataquiz')}}" class="nav-link {{ Route::is('dataquiz')||Route::is('dataquiz.pertanyaan') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Quiz</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route('datagroupquiz')}}" class="nav-link {{ Route::is('datagroupquiz') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Group Quiz</p>
                             </a>
                         </li>
                         <li class="nav-item">

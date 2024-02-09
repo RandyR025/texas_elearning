@@ -148,6 +148,9 @@ $(document).on("click", ".edit_datajadwalquiz", function (e) {
                 $("#editkelas")
                     .val(response.modeljadwalquiz.kelas_id)
                     .trigger("change");
+                $("#editgroup")
+                    .val(response.modeljadwalquiz.group_id)
+                    .trigger("change");
                 $("#editquiz_sebelumnya")
                     .val(response.modeljadwalquiz.prev_quiz)
                     .trigger("change");
@@ -159,10 +162,12 @@ $(document).on("click", ".edit_datajadwalquiz", function (e) {
                         url: '/getquiz',
                         dataType: 'json',
                         processResults: function(modelprevquiz){
+                            var options = [{ id: '', text: 'Pilih Quiz' }];
+                            modelprevquiz.forEach(function(item) {
+                                options.push({ id: item.id, text: item.judul_quiz });
+                            });
                             return {
-                                results: $.map(modelprevquiz, function(item){
-                                    return { id: item.id, text: item.judul_quiz };
-                                })
+                                results: options
                             };
                         }
                     },
@@ -344,16 +349,20 @@ function initQuizSebelumnyaSelect2() {
                 };
             },
             processResults: function (data) {
+                // Menambahkan opsi "Pilih Quiz" ke data hasil jika diperlukan
+                var options = [{ id: '', text: 'Pilih Quiz' }];
+                data.forEach(function(item) {
+                    options.push({ id: item.id, text: item.judul_quiz });
+                });
                 return {
-                    results: $.map(data, function (item) {
-                        return { id: item.id, text: item.judul_quiz };
-                    })
+                    results: options
                 };
             },
             cache: true
         },
     });
 }
+
 $(document).ready(function () {
     initQuizSebelumnyaSelect2();
 });
