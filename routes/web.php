@@ -4,11 +4,13 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupQuizController;
 use App\Http\Controllers\HandlerController;
 use App\Http\Controllers\HasilQuizController;
+use App\Http\Controllers\HasilQuizSiswaController;
 use App\Http\Controllers\HasilQuizTentorController;
 use App\Http\Controllers\JadwalQuizController;
 use App\Http\Controllers\JadwalQuizTentorController;
 use App\Http\Controllers\KategoriQuizController;
 use App\Http\Controllers\KelasController;
+use App\Http\Controllers\KursusController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PertanyaanController;
@@ -77,6 +79,15 @@ Route::group(['middleware' => ['auth','web']], function () {
         Route::delete('/datakelas/delete/{id}', [KelasController::class, 'destroy']);
         /* End Data Kelas */
 
+        /* Data Kelas */
+        Route::get('/datakursus', [KursusController::class, 'index'])->name('datakursus');
+        Route::get('/datakursus/data', [KursusController::class, 'getData'])->name('datakursus.data');
+        Route::post('/datakursus/tambah', [KursusController::class, 'store'])->name('datakursus.tambah');
+        Route::get('/datakursus/edit/{id}', [KursusController::class, 'edit'])->name('datakursus.edit');
+        Route::post('/datakursus/update/{id}', [KursusController::class, 'update'])->name('datakursus.update');
+        Route::delete('/datakursus/delete/{id}', [KursusController::class, 'destroy']);
+        /* End Data Kelas */
+
         /* Data Quiz */
         Route::get('/dataquiz', [QuizController::class, 'index'])->name('dataquiz');
         Route::get('/dataquiz/data', [QuizController::class, 'getData'])->name('dataquiz.data');
@@ -114,6 +125,7 @@ Route::group(['middleware' => ['auth','web']], function () {
         Route::post('/datajadwalquiz/tambah', [JadwalQuizController::class, 'store'])->name('datajadwalquiz.tambah');
         Route::get('/datajadwalquiz/edit/{id}', [JadwalQuizController::class, 'edit'])->name('datajadwalquiz.edit');
         Route::post('/datajadwalquiz/update/{id}', [JadwalQuizController::class, 'update'])->name('datajadwalquiz.update');
+        Route::get('/getsiswa/{id}', [JadwalQuizController::class, 'getSiswa'])->name('getSiswa');
         Route::delete('/datajadwalquiz/delete/{id}', [JadwalQuizController::class, 'destroy']);
         /* End Data Jadwal Quiz */
 
@@ -129,7 +141,11 @@ Route::group(['middleware' => ['auth','web']], function () {
 
         /* Data Hasil Quiz */
         Route::get('/datahasilquiz', [HasilQuizController::class, 'index'])->name('datahasilquiz');
-        Route::get('/datahasilquiz/data', [HasilQuizController::class, 'getData'])->name('datahasilquiz.data');
+        Route::get('/datahasilquizcover/detail/{id}/{tgl}', [HasilQuizController::class, 'indexCoverDetail'])->name('datahasilquizdetailcover');
+        Route::get('/datahasilquizcover/detailcover/{id}', [HasilQuizController::class, 'indexDetail'])->name('datahasilquizdetail');
+        Route::get('/datahasilquizcover/data', [HasilQuizController::class, 'getDataCover'])->name('datahasilquizcover.data');
+        Route::get('/datahasilquizcover/data/{id}/{tgl}', [HasilQuizController::class, 'getDataDetailCover'])->name('datahasilquizdetailcover.data');
+        Route::get('/datahasilquiz/data/{id}', [HasilQuizController::class, 'getData'])->name('datahasilquiz.data');
         Route::get('/detaildatahasilquiz/data/{id}', [HasilQuizController::class, 'getDataDetail'])->name('detaildatahasilquiz.data');
         Route::get('/detaildatahasilquiz/detail/{id}', [HasilQuizController::class, 'showDetail'])->name('detaildatahasilquiz.detail');
         Route::post('/datahasilquiz/tambah', [HasilQuizController::class, 'store'])->name('datahasilquiz.tambah');
@@ -162,6 +178,7 @@ Route::group(['middleware' => ['auth','web']], function () {
         Route::post('/datapertanyaantentor/update/{id}', [PertanyaanController::class, 'update'])->name('datapertanyaantentor.update');
         Route::delete('/datajawaban/delete/{id}', [PertanyaanController::class, 'jawabandelete'])->name('datajawaban.delete');
         Route::delete('/datapertanyaantentor/delete/{id}', [PertanyaanController::class, 'destroy'])->name('datapertanyaantentor.delete');
+        Route::post('/updateOrderTentor', [PertanyaanController::class, 'updateOrder'])->name('updateOrderTentor');
         /* End Data Pertanyaan */
 
         /* Data Jadwal Quiz */
@@ -172,11 +189,16 @@ Route::group(['middleware' => ['auth','web']], function () {
         Route::get('/datajadwalquiztentor/edit/{id}', [JadwalQuizTentorController::class, 'edit'])->name('datajadwalquiztentor.edit');
         Route::post('/datajadwalquiztentor/update/{id}', [JadwalQuizTentorController::class, 'update'])->name('datajadwalquiztentor.update');
         Route::delete('/datajadwalquiztentor/delete/{id}', [JadwalQuizTentorController::class, 'destroy']);
+        Route::get('/getsiswatentor/{id}', [JadwalQuizTentorController::class, 'getSiswa'])->name('getSiswaTentor');
         /* End Data Jadwal Quiz */
 
         /* Data Hasil Quiz */
         Route::get('/datahasilquiztentor', [HasilQuizTentorController::class, 'index'])->name('datahasilquiztentor');
-        Route::get('/datahasilquiztentor/data', [HasilQuizTentorController::class, 'getData'])->name('datahasilquiztentor.data');
+        Route::get('/datahasilquizcovertentor/detail/{id}/{tgl}', [HasilQuizTentorController::class, 'indexCoverDetail'])->name('datahasilquizdetailcovertentor');
+        Route::get('/datahasilquizcovertentor/detailcover/{id}', [HasilQuizTentorController::class, 'indexDetail'])->name('datahasilquizdetailtentor');
+        Route::get('/datahasilquizcovertentor/data', [HasilQuizTentorController::class, 'getDataCover'])->name('datahasilquizcovertentor.data');
+        Route::get('/datahasilquizcovertentor/data/{id}/{tgl}', [HasilQuizTentorController::class, 'getDataDetailCover'])->name('datahasilquizdetailcovertentor.data');
+        Route::get('/datahasilquiztentor/data/{id}', [HasilQuizTentorController::class, 'getData'])->name('datahasilquiztentor.data');
         Route::get('/detaildatahasilquiztentor/data/{id}', [HasilQuizTentorController::class, 'getDataDetail'])->name('detaildatahasilquiztentor.data');
         Route::get('/detaildatahasilquiztentor/detail/{id}', [HasilQuizTentorController::class, 'showDetail'])->name('detaildatahasilquiztentor.detail');
         Route::post('/datahasilquiztentor/tambah', [HasilQuizTentorController::class, 'store'])->name('datahasilquiztentor.tambah');
@@ -184,6 +206,7 @@ Route::group(['middleware' => ['auth','web']], function () {
         Route::post('/datahasilquiztentor/update/{id}', [HasilQuizTentorController::class, 'update'])->name('datahasilquiztentor.update');
         Route::delete('/datahasilquiztentor/delete/{id}', [HasilQuizTentorController::class, 'destroy']);
         Route::get('/datahasilquiztentor/edit/{id}', [HasilQuizTentorController::class, 'edit'])->name('datahasilquiztentor.edit');
+        Route::get('/detaildatahasilquiztentor/detail/{id}', [HasilQuizTentorController::class, 'showDetail'])->name('detaildatahasilquiztentor.detail');
         /* End Data Hasil Quiz */
     });
     Route::group(['middleware' => ['cek_login:3']], function () {
@@ -191,10 +214,17 @@ Route::group(['middleware' => ['auth','web']], function () {
         /* Quiz */
         Route::get('/quizsiswa', [QuizController::class, 'quizSiswa'])->name('quizsiswa');
         Route::get('/quizsiswa/detail/{id}/{jadwal}', [QuizController::class, 'quizDetail'])->name('quizsiswadetail');
+        Route::get('/quizsiswa/cover/{id}/{tanggal}', [QuizController::class, 'quizSiswaCover'])->name('quizsiswacover');
         Route::post('/hasilpilihanquiz', [QuizController::class, 'HasilPilihanQuiz'])->name('hasilpilihanquiz');
         Route::post('/hasiltextquiz', [QuizController::class, 'HasilTextQuiz'])->name('hasiltextquiz');
         Route::post('/totalnilai', [QuizController::class, 'totalnilai'])->name('totalnilai');
         Route::get('/cekhasil/{id}/{tgl}', [QuizController::class, 'cekhasil'])->name('cekhasil');
+        Route::get('/quizsiswahasil', [HasilQuizSiswaController::class, 'index'])->name('quizsiswahasil');
+        Route::get('/datahasilquizsiswa/data', [HasilQuizSiswaController::class, 'getData'])->name('datahasilquizsiswa.data');
+        Route::get('/detaildatahasilquizsiswa/data/{group}/{tgl}', [HasilQuizSiswaController::class, 'getDataDetail'])->name('detaildatahasilquizsiswa.data');
+        Route::get('/datahasilquizsiswa/detail/{group}/{tgl}', [HasilQuizSiswaController::class, 'show'])->name('datahasilquizsiswa.detail');
+        Route::get('/cetaktoefl/{id}/{tgl}', [HasilQuizSiswaController::class, 'cetakToefl'])->name('cetaktoefl');
+
         // Route::get('/quizsiswa/detail/fetch_data/{id}/{jadwal}', [QuizController::class, 'fetch_data']);
         /* End Quiz */
     });

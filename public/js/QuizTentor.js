@@ -141,6 +141,7 @@ $(document).on("click", ".edit_dataquiztentor", function (e) {
                 // $("#edit_id").val(quiz_id);
                 $("#hidden_id").val(quiz_id);
                 $("#editjudul_quiz").val(response.modelquiz.judul_quiz);
+                $("#cekaudio").val(response.modelquiz.audio_quiz);
                 $("#editkategori")
                     .val(response.modelquiz.kategori_id)
                     .trigger("change");
@@ -161,6 +162,15 @@ $(document).on("click", ".edit_dataquiztentor", function (e) {
                         "src",
                         "audios_quiz/" + response.modelquiz.audio_quiz
                     );
+                    var removeButton = document.createElement('button');
+                    removeButton.innerHTML = 'Remove Audio';
+                    removeButton.onclick = function() {
+                    $("#editaudio_preview").html("");
+                    $("#editfileLabeledit").html('Choose file');
+                    $("#editaudio_quiz").val(null); // Reset the input value
+                    $("#cekaudio").val(null);
+                    };
+                $("#editaudio_preview").append(removeButton);
                 }
                 if (response.modelquiz.audio_quiz == null) {
                     $("#editaudio_preview").html("");

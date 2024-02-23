@@ -44,10 +44,12 @@ Quiz
         <div class="row">
             <div class="col-md-12">
                 <div class="box box-primary">
-                    <audio id="audioQuiz" controls>
+                    @if(isset($quiz[0]->audio_quiz))
+                    <audio id="audioQuiz" controls hidden>
                         <source src="{{asset('audios_quiz/'.$quiz[0]->audio_quiz)}}" type="audio/mp3">
                         Maaf, browser Anda tidak mendukung tag audio.
                     </audio>
+                    @endif
                     <div id="countdown" class="mb-2"></div>
                     <?php if (!cekQuiz($quiz[0]->quiz_id, Auth::user()->id, $quiz[0]->jadwal)) { ?>
                         <div class="box-body" id="datapertanyaan">
@@ -300,18 +302,33 @@ Quiz
 //                 console.error('Tidak dapat memutar audio:', error);
 //             });
 //     });
-if ('<?php echo $quiz[0]->audio_quiz  ?>') {
-    document.addEventListener('keydown', function (event) {
-            // Check if the key pressed is the 'F5' key (keyCode 116)
-            if (event.keyCode === 116) {
-                // Munculkan peringatan alert
-                const confirmationMessage = 'Jika anda merefresh halaman maka audio mulai dari awal dan waktu ujian tetap berlanjut, Anda yakin ?';
-                if (!confirm(confirmationMessage)) {
-                    event.preventDefault(); // Mencegah refresh jika pengguna membatalkan peringatan
-                }
-            }
-        });
-}
+window.addEventListener("beforeunload", function (e) {
+    // Munculkan pesan konfirmasi jika audio_quiz tersedia dan pengguna mencoba untuk meninggalkan halaman
+    if ('<?php echo $quiz[0]->audio_quiz ?>') {
+        const confirmationMessage = 'Jika Anda meninggalkan halaman ini, pemutaran audio akan dimulai dari awal dan waktu ujian tetap berlanjut. Anda yakin?';
+        // Tampilkan pesan konfirmasi
+        if (!confirm(confirmationMessage)) {
+            // Mencegah pengguna untuk meninggalkan halaman jika mereka membatalkan pesan konfirmasi
+            e.preventDefault(); // If you prevent default behavior in Mozilla Firefox, prompt will always be shown
+            // Chrome requires returnValue to be set
+            e.returnValue = "";
+        }
+    }
+});
+
+document.addEventListener('keydown', function (event) {
+    // Check if the key pressed is the 'F5' key (keyCode 116)
+    if (event.keyCode === 116) {
+        // Munculkan peringatan alert saat pengguna menekan tombol F5
+        const confirmationMessage = 'Jika Anda merefresh halaman maka audio akan dimulai dari awal dan waktu ujian tetap berlanjut. Anda yakin?';
+        // Tampilkan pesan konfirmasi
+        if (!confirm(confirmationMessage)) {
+            // Mencegah refresh jika pengguna membatalkan peringatan
+            event.preventDefault();
+        }
+    }
+});
+
 </script>
 @endsection
 @endsection

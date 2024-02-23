@@ -200,11 +200,21 @@ class QuizController extends Controller
 
                     ]);
                 } else {
-                    $modelquiz->update([
+                    if ($modelquiz->audio_quiz != null && $request->cekaudio == null) {
+                        File::delete('audios_quiz/' . $modelquiz->audio_quiz);
+                        $modelquiz->update([
                         'judul_quiz' => $request->input('editjudul_quiz'),
                         'kategori_id' => $request->input('editkategori'),
                         'user_id' => json_encode($request->input('edittentor')),
+                        'audio_quiz' => null,
                     ]);
+                    }else {
+                        $modelquiz->update([
+                            'judul_quiz' => $request->input('editjudul_quiz'),
+                            'kategori_id' => $request->input('editkategori'),
+                            'user_id' => json_encode($request->input('edittentor')),
+                        ]);
+                    }
                 }
                 return response()->json([
                     'status' => 200,
@@ -254,16 +264,51 @@ class QuizController extends Controller
 
     public function quizSiswa()
     {
+        $user_id = Auth::user()->id;
         $jumlahsoal = [];
-        $modelquiz = Quiz::select('quiz.id', 'quiz.judul_quiz', 'quiz.gambar_quiz', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.id as id_jadwal')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where('jadwalquiz.kelas_id', '=', Auth::user()->userSiswa->kelas_id)->orderBy('jadwalquiz.id', 'asc')->get();
-        foreach ($modelquiz as $key => $value) {
-            $jumlahsoal[$key] = Pertanyaan::where([['quiz_id', '=', $value->id], ['tipe_pertanyaan', '!=', 'Custom Banner']])->get()->count();
+        $modelquiz = Quiz::select('quiz.id', 'quiz.judul_quiz', 'quiz.gambar_quiz', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.id as id_jadwal', 'jadwalquiz.group_id', 'quiz_group.nama_group')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->leftjoin('quiz_group', 'jadwalquiz.group_id', '=', 'quiz_group.id')->where('jadwalquiz.kelas_id', '=', Auth::user()->userSiswa->kelas_id)
+        ->where(function ($query) use ($user_id) {
+            $query->where(function ($subquery) use ($user_id) {
+                    $subquery->whereJsonContains('jadwalquiz.siswa_id', (string) $user_id)
+                        ->orWhereJsonContains('jadwalquiz.siswa_id', json_encode([$user_id]))
+                        ->orWhereJsonContains('jadwalquiz.siswa_id', ["all"]);
+                });
+        })->orderBy('jadwalquiz.id', 'asc')->get()->groupBy(['group_id','tanggal_mulai']);
+        // dd($modelquiz);
+        foreach ($modelquiz as $keyyy => $valueee) {
+            foreach ($valueee as $keyy => $valuee) {
+                foreach ($valuee as $key => $value) {
+                    $jumlahsoal[$key] = Pertanyaan::where([['quiz_id', '=', $value->id], ['tipe_pertanyaan', '!=', 'Custom Banner']])->get()->count();
+                }
+            }
         }
         $tanggal = Carbon::now('Asia/Jakarta');
-        $now = $tanggal->toDateString();
+        $now = $tanggal->toDateTimeString();
         $future = $tanggal->addWeek();
         return view('backend/siswa.quiz', compact('modelquiz', 'jumlahsoal', 'now'));
     }
+
+    public function quizSiswaCover($id, $tanggal)
+    {
+        $user_id = Auth::user()->id;
+        $jumlahsoal = [];
+        $modelquiz = Quiz::select('quiz.id', 'quiz.judul_quiz', 'quiz.gambar_quiz', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.id as id_jadwal', 'jadwalquiz.group_id', 'quiz_group.nama_group')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->leftjoin('quiz_group', 'jadwalquiz.group_id', '=', 'quiz_group.id')->where([['jadwalquiz.kelas_id', '=', Auth::user()->userSiswa->kelas_id],['jadwalquiz.group_id','=',$id],['jadwalquiz.tanggal_mulai','=',$tanggal]])->where(function ($query) use ($user_id) {
+            $query->where(function ($subquery) use ($user_id) {
+                    $subquery->whereJsonContains('jadwalquiz.siswa_id', (string) $user_id)
+                        ->orWhereJsonContains('jadwalquiz.siswa_id', json_encode([$user_id]))
+                        ->orWhereJsonContains('jadwalquiz.siswa_id', ["all"]);
+                });
+        })->orderBy('jadwalquiz.id', 'asc')->get();
+        // dd($modelquiz);
+        foreach ($modelquiz as $key => $value) {
+                    $jumlahsoal[$key] = Pertanyaan::where([['quiz_id', '=', $value->id], ['tipe_pertanyaan', '!=', 'Custom Banner']])->get()->count();
+        }
+        $tanggal = Carbon::now('Asia/Jakarta');
+        $now = $tanggal->toDateTimeString();
+        $future = $tanggal->addWeek();
+        return view('backend/siswa.quiz', compact('modelquiz', 'jumlahsoal', 'now'));
+    }
+
     public function quizDetail(Request $request, $id, $jadwal)
     {
         $halaman = Jadwal::find($jadwal);

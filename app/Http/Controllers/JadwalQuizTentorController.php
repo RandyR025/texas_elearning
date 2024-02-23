@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GroupQuiz;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\Quiz;
+use App\Models\Siswa;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use DataTables;
@@ -23,16 +25,18 @@ class JadwalQuizTentorController extends Controller
         $user_id = Auth::user()->id;
         $currentDate = Carbon::now()->toDateString();
         $modelkelas = Kelas::all();
+        $modelgroup = GroupQuiz::all();
         $modelquiz = Quiz::where(function ($subquery) use ($user_id) {
             $subquery->whereJsonContains('quiz.user_id', (string) $user_id)
                 ->orWhereJsonContains('quiz.user_id', json_encode([$user_id]))
                 ->orWhereJsonContains('quiz.user_id', ["all"]);
         })->get();
-        $modelprevquiz = Jadwal::join('quiz','jadwalquiz.quiz_id','=','quiz.id')->select('jadwalquiz.id', 'jadwalquiz.updated_at', 'quiz.judul_quiz')->where(function ($subquery) use ($user_id) {
+        $modelprevquiz = Jadwal::join('quiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->select('jadwalquiz.id', 'jadwalquiz.updated_at', 'quiz.judul_quiz')->where(function ($subquery) use ($user_id) {
             $subquery->whereJsonContains('quiz.user_id', (string) $user_id)
                 ->orWhereJsonContains('quiz.user_id', json_encode([$user_id]))
-                ->orWhereJsonContains('quiz.user_id', ["all"]);})->whereDate('jadwalquiz.updated_at','=',$currentDate)->get();
-        return view('backend/tentor.jadwalquiz', compact('modelquiz','modelkelas','modelprevquiz'));
+                ->orWhereJsonContains('quiz.user_id', ["all"]);
+        })->whereDate('jadwalquiz.updated_at', '=', $currentDate)->get();
+        return view('backend/tentor.jadwalquiz', compact('modelquiz', 'modelkelas', 'modelprevquiz', 'modelgroup'));
     }
 
     /**
@@ -60,6 +64,7 @@ class JadwalQuizTentorController extends Controller
             'waktu_quiz' => 'required',
             'tampilan_soal' => 'required',
             'kelas' => 'required',
+            'siswa' => 'required',
 
         ]);
         if ($validator->fails()) {
@@ -75,7 +80,9 @@ class JadwalQuizTentorController extends Controller
             $modeljadwalquiz->waktu_quiz = $request->input('waktu_quiz');
             $modeljadwalquiz->tampilan_soal = $request->input('tampilan_soal');
             $modeljadwalquiz->user_id = json_encode([strval(Auth::user()->id)]);
+            $modeljadwalquiz->siswa_id = json_encode($request->input('siswa'));
             $modeljadwalquiz->kelas_id = $request->input('kelas');
+            $modeljadwalquiz->group_id = $request->input('group');
             $modeljadwalquiz->prev_quiz = $request->input('quiz_sebelumnya');
             $modeljadwalquiz->save();
 
@@ -106,7 +113,7 @@ class JadwalQuizTentorController extends Controller
     public function edit($id)
     {
         $modeljadwalquiz = Jadwal::find($id);
-        $modeljadwalprevious = Jadwal::join('quiz','jadwalquiz.quiz_id','=','quiz.id')->select('jadwalquiz.id', 'jadwalquiz.quiz_id', 'jadwalquiz.kelas_id', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.waktu_quiz', 'jadwalquiz.tampilan_soal',  'jadwalquiz.user_id' ,'jadwalquiz.prev_quiz', 'quiz.judul_quiz')->where('jadwalquiz.id','=',$modeljadwalquiz->prev_quiz)->first();
+        $modeljadwalprevious = Jadwal::join('quiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->select('jadwalquiz.id', 'jadwalquiz.quiz_id', 'jadwalquiz.kelas_id', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.waktu_quiz', 'jadwalquiz.tampilan_soal',  'jadwalquiz.user_id', 'jadwalquiz.prev_quiz', 'quiz.judul_quiz')->where('jadwalquiz.id', '=', $modeljadwalquiz->prev_quiz)->first();
         if ($modeljadwalquiz) {
             return response()->json([
                 'status' => 200,
@@ -137,6 +144,7 @@ class JadwalQuizTentorController extends Controller
             'editwaktu_quiz' => 'required',
             'edittampilan_soal' => 'required',
             'editkelas' => 'required',
+            'editsiswa' => 'required',
 
         ]);
         if ($validator->fails()) {
@@ -148,27 +156,32 @@ class JadwalQuizTentorController extends Controller
             $modeljadwalquiz = Jadwal::find($id);
             if ($modeljadwalquiz) {
                 if ($request->input('editquiz_sebelumnya') == null) {
-                $modeljadwalquiz->update([
-                    'quiz_id' => $request->input('editnama_quiz'),
-                    'tanggal_mulai' => $request->input('edittanggal_mulai'),
-                    'tanggal_berakhir' => $request->input('edittanggal_berakhir'),
-                    'waktu_quiz' => $request->input('editwaktu_quiz'),
-                    'tampilan_soal' => $request->input('edittampilan_soal'),
-                    'kelas_id' => $request->input('editkelas'),
-                    'user_id' => json_encode([strval(Auth::user()->id)]),
-                ]);
-            }else {
-                $modeljadwalquiz->update([
-                    'quiz_id' => $request->input('editnama_quiz'),
-                    'tanggal_mulai' => $request->input('edittanggal_mulai'),
-                    'tanggal_berakhir' => $request->input('edittanggal_berakhir'),
-                    'waktu_quiz' => $request->input('editwaktu_quiz'),
-                    'tampilan_soal' => $request->input('edittampilan_soal'),
-                    'kelas_id' => $request->input('editkelas'),
-                    'user_id' => json_encode([strval(Auth::user()->id)]),
-                    'prev_quiz' => $request->input('editquiz_sebelumnya'),
-                ]);
-            }
+                    $modeljadwalquiz->update([
+                        'quiz_id' => $request->input('editnama_quiz'),
+                        'tanggal_mulai' => $request->input('edittanggal_mulai'),
+                        'tanggal_berakhir' => $request->input('edittanggal_berakhir'),
+                        'waktu_quiz' => $request->input('editwaktu_quiz'),
+                        'tampilan_soal' => $request->input('edittampilan_soal'),
+                        'kelas_id' => $request->input('editkelas'),
+                        'group_id' => $request->input('editgroup'),
+                        'user_id' => json_encode([strval(Auth::user()->id)]),
+                        'siswa_id' => json_encode($request->input('editsiswa')),
+                        'prev_quiz' => $request->input('editquiz_sebelumnya'),
+                    ]);
+                } else {
+                    $modeljadwalquiz->update([
+                        'quiz_id' => $request->input('editnama_quiz'),
+                        'tanggal_mulai' => $request->input('edittanggal_mulai'),
+                        'tanggal_berakhir' => $request->input('edittanggal_berakhir'),
+                        'waktu_quiz' => $request->input('editwaktu_quiz'),
+                        'tampilan_soal' => $request->input('edittampilan_soal'),
+                        'kelas_id' => $request->input('editkelas'),
+                        'user_id' => json_encode([strval(Auth::user()->id)]),
+                        'siswa_id' => json_encode($request->input('editsiswa')),
+                        'group_id' => $request->input('editgroup'),
+                        'prev_quiz' => $request->input('editquiz_sebelumnya'),
+                    ]);
+                }
                 return response()->json([
                     'status' => 200,
                     'message' => "Data Berhasil Di Perbarui !!!",
@@ -216,24 +229,30 @@ class JadwalQuizTentorController extends Controller
 
         return DataTables::of($jadwal)->make(true);
     }
-    
+
     public function getQuiz(Request $request)
     {
         $user_id = Auth::user()->id;
         $currentDate = Carbon::now()->toDateString();
         $query = $request->input('q'); // Ambil nilai pencarian dari parameter 'q'
-        
-        $modelprevquiz = Jadwal::join('quiz','jadwalquiz.quiz_id','=','quiz.id')->select('jadwalquiz.id', 'jadwalquiz.updated_at', 'quiz.judul_quiz')->where(function ($subquery) use ($user_id) {
+
+        $modelprevquiz = Jadwal::join('quiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->select('jadwalquiz.id', 'jadwalquiz.updated_at', 'quiz.judul_quiz')->where(function ($subquery) use ($user_id) {
             $subquery->whereJsonContains('jadwalquiz.user_id', (string) $user_id)
                 ->orWhereJsonContains('jadwalquiz.user_id', json_encode([$user_id]))
-                ->orWhereJsonContains('jadwalquiz.user_id', ["all"]);})->whereDate('jadwalquiz.updated_at','=',$currentDate)
-                ->where(function($q) use ($query) {
-                    // Tambahkan kondisi pencarian jika nilai pencarian ada
-                    if ($query) {
-                        $q->where('quiz.judul_quiz', 'like', '%' . $query . '%');
-                    }
-                })->get();
-        
-                return response()->json($modelprevquiz);
-            }
+                ->orWhereJsonContains('jadwalquiz.user_id', ["all"]);
+        })->whereDate('jadwalquiz.updated_at', '=', $currentDate)
+            ->where(function ($q) use ($query) {
+                // Tambahkan kondisi pencarian jika nilai pencarian ada
+                if ($query) {
+                    $q->where('quiz.judul_quiz', 'like', '%' . $query . '%');
+                }
+            })->get();
+
+        return response()->json($modelprevquiz);
+    }
+    public function getSiswa($id)
+    {
+        $siswa = Siswa::join('users', 'siswa.user_id', '=', 'users.id')->where('siswa.kelas_id', '=', $id)->get();
+        return response()->json(['siswa' => $siswa]);
+    }
 }

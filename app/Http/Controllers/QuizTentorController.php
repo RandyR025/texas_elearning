@@ -164,7 +164,7 @@ class QuizTentorController extends Controller
                     $modelquiz->update([
                         'judul_quiz' => $request->input('editjudul_quiz'),
                         'kategori_id' => $request->input('editkategori'),
-                        'user_id' => json_encode(strval(Auth::user()->id)),
+                        'user_id' => json_encode($request->input('edittentor')),
                         'gambar_quiz' => $filename,
                         'audio_quiz' => $filenameaudio,
 
@@ -178,7 +178,7 @@ class QuizTentorController extends Controller
                     $modelquiz->update([
                         'judul_quiz' => $request->input('editjudul_quiz'),
                         'kategori_id' => $request->input('editkategori'),
-                        'user_id' => json_encode(strval(Auth::user()->id)),
+                        'user_id' => json_encode($request->input('edittentor')),
                         'gambar_quiz' => $filename,
 
                     ]);
@@ -192,16 +192,26 @@ class QuizTentorController extends Controller
                     $modelquiz->update([
                         'judul_quiz' => $request->input('editjudul_quiz'),
                         'kategori_id' => $request->input('editkategori'),
-                        'user_id' => json_encode(strval(Auth::user()->id)),
+                        'user_id' => json_encode($request->input('edittentor')),
                         'audio_quiz' => $filenameaudio,
 
                     ]);
                 } else {
-                    $modelquiz->update([
+                    if ($modelquiz->audio_quiz != null && $request->cekaudio == null) {
+                        File::delete('audios_quiz/' . $modelquiz->audio_quiz);
+                        $modelquiz->update([
                         'judul_quiz' => $request->input('editjudul_quiz'),
                         'kategori_id' => $request->input('editkategori'),
-                        'user_id' => json_encode(strval(Auth::user()->id)),
+                        'user_id' => json_encode($request->input('edittentor')),
+                        'audio_quiz' => null,
                     ]);
+                    }else {
+                        $modelquiz->update([
+                            'judul_quiz' => $request->input('editjudul_quiz'),
+                            'kategori_id' => $request->input('editkategori'),
+                            'user_id' => json_encode($request->input('edittentor')),
+                        ]);
+                    }
                 }
                 return response()->json([
                     'status' => 200,

@@ -6,6 +6,7 @@ use App\Models\GroupQuiz;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\Quiz;
+use App\Models\Siswa;
 use App\Models\Tentor;
 use Illuminate\Http\Request;
 use DataTables;
@@ -56,6 +57,7 @@ class JadwalQuizController extends Controller
             'waktu_quiz' => 'required',
             'tampilan_soal' => 'required',
             'tentor' => 'required',
+            'siswa' => 'required',
             'kelas' => 'required',
 
         ]);
@@ -72,6 +74,7 @@ class JadwalQuizController extends Controller
             $modeljadwalquiz->waktu_quiz = $request->input('waktu_quiz');
             $modeljadwalquiz->tampilan_soal = $request->input('tampilan_soal');
             $modeljadwalquiz->user_id = json_encode($request->input('tentor'));
+            $modeljadwalquiz->siswa_id = json_encode($request->input('siswa'));
             $modeljadwalquiz->kelas_id = $request->input('kelas');
             $modeljadwalquiz->group_id = $request->input('group');
             $modeljadwalquiz->prev_quiz = $request->input('quiz_sebelumnya');
@@ -137,6 +140,7 @@ class JadwalQuizController extends Controller
             'editwaktu_quiz' => 'required',
             'edittampilan_soal' => 'required',
             'edittentor' => 'required',
+            'editsiswa' => 'required',
             'editkelas' => 'required',
 
         ]);
@@ -156,7 +160,9 @@ class JadwalQuizController extends Controller
                         'waktu_quiz' => $request->input('editwaktu_quiz'),
                         'tampilan_soal' => $request->input('edittampilan_soal'),
                         'kelas_id' => $request->input('editkelas'),
+                        'group_id' => $request->input('editgroup'),
                         'user_id' => json_encode($request->input('edittentor')),
+                        'siswa_id' => json_encode($request->input('editsiswa')),
                         'prev_quiz' => $request->input('editquiz_sebelumnya'),
                     ]);
                 }else {
@@ -167,7 +173,9 @@ class JadwalQuizController extends Controller
                         'waktu_quiz' => $request->input('editwaktu_quiz'),
                         'tampilan_soal' => $request->input('edittampilan_soal'),
                         'kelas_id' => $request->input('editkelas'),
+                        'group_id' => $request->input('editgroup'),
                         'user_id' => json_encode($request->input('edittentor')),
+                        'siswa_id' => json_encode($request->input('editsiswa')),
                         'prev_quiz' => $request->input('editquiz_sebelumnya'),
                     ]);
                 }
@@ -226,5 +234,9 @@ class JadwalQuizController extends Controller
             ->get();
 
         return response()->json($modelprevquiz);
+    }
+    public function getSiswa($id){
+        $siswa = Siswa::join('users','siswa.user_id','=','users.id')->where('siswa.kelas_id','=',$id)->get();
+        return response()->json(['siswa'=>$siswa]);
     }
 }

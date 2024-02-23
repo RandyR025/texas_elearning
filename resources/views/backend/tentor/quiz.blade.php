@@ -127,6 +127,17 @@ Data Quiz
                                                 </select>
                                                 <span class="text-danger error-text editkategori_error"></span>
                                             </div>
+                                            <div class="form-group" hidden>
+                                                <label>Tentor</label>
+                                                <select class="form-control edittentor" multiple="multiple" data-placeholder=" --Pilih Tentor-- " name="edittentor[]" id="edittentor" style="width: 100%;">
+                                                    <option value="all">Semua</option>
+                                                    <option value="Default">Default</option>
+                                                    @foreach($modeltentor as $tentor)
+                                                    <option value="{{ $tentor->user_id }}">{{ $tentor->nama}}</option>
+                                                    @endforeach
+                                                </select>
+                                                <span class="text-danger error-text edittentor_error"></span>
+                                            </div>
                                             <div class="form-group">
                                                 <label for="editgambar_quiz">Gambar Quiz</label>
                                                 <div class="custom-file">
@@ -142,9 +153,10 @@ Data Quiz
                                             </div>
 
                                             <div class="form-group">
+                                                <input id="cekaudio" type="text" class="cekaudio form-control" value="" name="cekaudio" hidden />
                                                 <label for="editaudio_quiz">Audio Quiz</label>
                                                 <div class="custom-file">
-                                                    <input type="file" class="custom-file-input" id="editaudio_quiz" name="editaudio_quiz" onchange="editpreviewAudio(this);">
+                                                    <input type="file" class="custom-file-input" accept=".mp3, .wav" id="editaudio_quiz" name="editaudio_quiz" onchange="editpreviewAudio(this);">
                                                     <label class="custom-file-label" for="editaudio_quiz" id="fileLabeledit">Choose file</label>
                                                 </div>
                                                 <span class="text-danger error-text editaudio_quiz_error"></span>
@@ -218,12 +230,21 @@ Data Quiz
     function previewAudio() {
         var input = document.querySelector('input[name="audio_quiz"]');
         var audioPreview = document.getElementById('audio_preview');
+        var fileLabel = document.getElementById('fileLabel');
 
         if (input.files && input.files[0]) {
             var reader = new FileReader();
 
             reader.onload = function(e) {
                 audioPreview.innerHTML = '<audio controls><source src="' + e.target.result + '" type="audio/' + input.files[0].type.split('/')[1] + '">Your browser does not support the audio element.</audio>';
+                var removeButton = document.createElement('button');
+                removeButton.innerHTML = 'Remove Audio';
+                removeButton.onclick = function() {
+                audioPreview.innerHTML = '';
+                fileLabel.innerHTML = 'Choose file';
+                input.value = null; // Reset the input value
+            };
+            audioPreview.appendChild(removeButton);
             };
 
             reader.readAsDataURL(input.files[0]);
@@ -233,12 +254,21 @@ Data Quiz
     function editpreviewAudio() {
         var input = document.querySelector('input[name="editaudio_quiz"]');
         var editaudioPreview = document.getElementById('editaudio_preview');
+        var editfileLabel = document.getElementById('editfileLabel');
 
         if (input.files && input.files[0]) {
             var reader = new FileReader();
 
             reader.onload = function(e) {
                 editaudioPreview.innerHTML = '<audio controls><source src="' + e.target.result + '" type="audio/' + input.files[0].type.split('/')[1] + '">Your browser does not support the audio element.</audio>';
+                var removeButton = document.createElement('button');
+                removeButton.innerHTML = 'Remove Audio';
+                removeButton.onclick = function() {
+                editaudioPreview.innerHTML = '';
+                editfileLabel.innerHTML = 'Choose file';
+                input.value = null; // Reset the input value
+            };
+            editaudioPreview.appendChild(removeButton);
             };
 
             reader.readAsDataURL(input.files[0]);

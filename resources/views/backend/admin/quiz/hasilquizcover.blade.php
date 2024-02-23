@@ -19,8 +19,7 @@ Data Hasil Quiz
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
-                    @if(Request::is('datahasilquizcover/detail/*'))
-                        <table id="datahasilquizcoverdetail" class="table table-bordered table-striped">
+                        <table id="datahasilquizcover" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>No</th>
@@ -28,28 +27,10 @@ Data Hasil Quiz
                                     <th>Kelas</th>
                                     <th>Tanggal Mulai</th>
                                     <th>Tanggal Berakhir</th>
-                                    <th>Waktu Quiz</th>
-                                    <th>Jumlah Siswa</th>
                                     <th>Detail</th>
                                 </tr>
                             </thead>
                         </table>
-                    @elseif(Request::is('datahasilquizcover/detailcover/*'))
-                    <table id="datahasilquiz" class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Quiz</th>
-                                    <th>Kelas</th>
-                                    <th>Tanggal Mulai</th>
-                                    <th>Tanggal Berakhir</th>
-                                    <th>Waktu Quiz</th>
-                                    <th>Jumlah Siswa</th>
-                                    <th>Detail</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    @endif
                     </div>
                     <!-- /.card-body -->
                 </div>

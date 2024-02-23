@@ -1,5 +1,5 @@
-<footer class="main-footer">
-    <strong>Texas English Course @2023 </strong>
+<footer class="main-footer text-center">
+    <strong>Texas English Course @2023</strong>
 </footer>
 
 <!-- Control Sidebar -->

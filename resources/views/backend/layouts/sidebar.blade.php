@@ -76,8 +76,14 @@
                         <p>Data Kelas</p>
                     </a>
                 </li>
-                <li class="nav-item {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan')||Route::is('datahasilquiz')||Route::is('datagroupquiz') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan')||Route::is('datahasilquiz')||Route::is('datagroupquiz') ? 'active' : '' }}">
+                <li class="nav-item">
+                    <a href="{{route('datakursus')}}" class="nav-link {{ Route::is('datakursus') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-suitcase"></i>
+                        <p>Data Kursus</p>
+                    </a>
+                </li>
+                <li class="nav-item {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan')||Route::is('datahasilquiz')||Route::is('datagroupquiz')||Route::is('datahasilquizdetailcover')||Route::is('datahasilquiz.data.detail')||Route::is('detaildatahasilquiz.detail')||Route::is('datahasilquizdetail') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ Route::is('datakategoriquiz')||Route::is('dataquiz')||Route::is('datajadwalquiz')||Route::is('dataquiz.pertanyaan')||Route::is('datahasilquiz')||Route::is('datagroupquiz')||Route::is('datahasilquizdetailcover')||Route::is('datahasilquiz.data.detail')||Route::is('detaildatahasilquiz.detail')||Route::is('datahasilquizdetail') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-chart-pie"></i>
                         <p>
                             Quizezz
@@ -110,7 +116,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{route('datahasilquiz')}}" class="nav-link {{ Route::is('datahasilquiz') ? 'active' : '' }}">
+                            <a href="{{route('datahasilquiz')}}" class="nav-link {{ Route::is('datahasilquiz')||Route::is('datahasilquizdetailcover')||Route::is('datahasilquiz.data.detail')||Route::is('detaildatahasilquiz.detail')||Route::is('datahasilquizdetail') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Hasil Quiz</p>
                             </a>
@@ -155,6 +161,12 @@
                     <a href="{{route('quizsiswa')}}" class="nav-link {{ Route::is('quizsiswa')||Route::is('quizsiswadetail') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-list-alt"></i>
                         <p>Quiz</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{route('quizsiswahasil')}}" class="nav-link {{ Route::is('quizsiswahasil')||Route::is('quizsiswahasildetail') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tv"></i>
+                        <p>Hasil Quiz</p>
                     </a>
                 </li>
                 @endif

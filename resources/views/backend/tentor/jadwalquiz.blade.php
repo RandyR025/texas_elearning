@@ -44,6 +44,13 @@ Data Jadwal Quiz
                                             <span class="text-danger error-text kelas_error"></span>
                                         </div>
                                         <div class="form-group">
+                                            <label>Siswa</label>
+                                            <select class="form-control siswa" multiple="multiple" data-placeholder=" --Pilih Siswa-- " name="siswa[]" id="siswa" style="width: 100%;">
+                                                <!-- <option value="all">Semua</option> -->
+                                            </select>
+                                            <span class="text-danger error-text siswa_error"></span>
+                                        </div>
+                                        <div class="form-group">
                                             <label>Tanggal Mulai Quiz</label>
                                             <div class="input-group date" id="tanggal_mulai" data-target-input="nearest">
                                                 <input type="text" class="form-control datetimepicker-input" data-target="#tanggal_mulai" name="tanggal_mulai" id="tanggal_mulai1" />
@@ -72,6 +79,16 @@ Data Jadwal Quiz
                                             <label for="tampilan_soal">Tampilan Soal/Halaman</label>
                                             <input type="text" class="form-control" id="tampilan_soal" placeholder="Tampilan Soal" name="tampilan_soal" oninput="validateInput(this)">
                                             <span class="text-danger error-text tampilan_soal_error"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Group Quiz</label>
+                                            <select class="form-control group" style="width: 100%;" name="group" id="group">
+                                                <option selected="selected" value="">-- Pilih Group --</option>
+                                                @foreach($modelgroup as $group)
+                                                <option value="{{ $group->id }}">{{ $group->nama_group}}</option>
+                                                @endforeach
+                                            </select>
+                                            <span class="text-danger error-text group_error"></span>
                                         </div>
                                         <div class="form-group">
                                             <label>Quiz Sebelumnya</label>
@@ -158,6 +175,13 @@ Data Jadwal Quiz
                                                 <span class="text-danger error-text editkelas_error"></span>
                                             </div>
                                             <div class="form-group">
+                                                <label>Siswa</label>
+                                                <select class="form-control editsiswa" multiple="multiple" data-placeholder=" --Pilih Siswa-- " name="editsiswa[]" id="editsiswa" style="width: 100%;">
+                                                <!-- <option value="all">Semua</option> -->
+                                                </select>
+                                                <span class="text-danger error-text editsiswa_error"></span>
+                                            </div>
+                                            <div class="form-group">
                                                 <label>Tanggal Mulai Quiz</label>
                                                 <div class="input-group date" id="edittanggal_mulai" data-target-input="nearest">
                                                     <input type="text" class="form-control datetimepicker-input" data-target="#edittanggal_mulai" name="edittanggal_mulai" id="edittanggal_mulai1" />
@@ -188,9 +212,20 @@ Data Jadwal Quiz
                                                 <span class="text-danger error-text edittampilan_soal_error"></span>
                                             </div>
                                             <div class="form-group">
+                                                <label>Group Quiz</label>
+                                                <select class="form-control editgroup" style="width: 100%;" name="editgroup" id="editgroup">
+                                                    <option selected="selected" value="">-- Pilih Group --</option>
+                                                    @foreach($modelgroup as $group)
+                                                    <option value="{{ $group->id }}">{{ $group->nama_group}}</option>
+                                                    @endforeach
+                                                </select>
+                                                <span class="text-danger error-text editgroup_error"></span>
+                                            </div>
+                                            <div class="form-group">
                                                 <label>Quiz Sebelumnya</label>
                                                 <select class="form-control editquiz_sebelumnya" style="width: 100%;" name="editquiz_sebelumnya" id="editquiz_sebelumnya">
-                                                    <option hidden>Pilih Quiz</option>
+                                                    <!-- <option hidden>Pilih Quiz</option> -->
+                                                    <option value="" selected>Pilih Quiz</option>
                                                 </select>
                                                 <span class="text-danger error-text quiz_sebelumnya_error"></span>
                                             </div>
@@ -215,16 +250,20 @@ Data Jadwal Quiz
 @section('js')
 <script>
     $('#tanggal_mulai').datetimepicker({
-        format: 'YYYY-MM-DD'
+        format: 'YYYY-MM-DD HH:mm', 
+        icons: { time: 'far fa-clock' }
     });
     $('#tanggal_berakhir').datetimepicker({
-        format: 'YYYY-MM-DD'
+        format: 'YYYY-MM-DD HH:mm', 
+        icons: { time: 'far fa-clock' }
     });
     $('#edittanggal_mulai').datetimepicker({
-        format: 'YYYY-MM-DD'
+        format: 'YYYY-MM-DD HH:mm', 
+        icons: { time: 'far fa-clock' }
     });
     $('#edittanggal_berakhir').datetimepicker({
-        format: 'YYYY-MM-DD'
+        format: 'YYYY-MM-DD HH:mm', 
+        icons: { time: 'far fa-clock' }
     });
     $('.nama_quiz').select2({
         theme: 'bootstrap4'
@@ -236,6 +275,18 @@ Data Jadwal Quiz
         theme: 'bootstrap4'
     })
     $('.editkelas').select2({
+        theme: 'bootstrap4'
+    })
+    $('.siswa').select2({
+        theme: 'bootstrap4'
+    })
+    $('.editsiswa').select2({
+        theme: 'bootstrap4'
+    })
+    $('.group').select2({
+        theme: 'bootstrap4'
+    })
+    $('.editgroup').select2({
         theme: 'bootstrap4'
     })
 

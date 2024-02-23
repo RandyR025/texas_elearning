@@ -10,7 +10,32 @@ Quiz
 @endsection
 @section('css')
 <style>
+    .question-boxes {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
 
+    .question-box {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+
+    .bg-light {
+        background-color: #fff;
+    }
+
+    .bg-success {
+        background-color: #28a745;
+        color: #fff;
+    }
 </style>
 @endsection
 @section('content')
@@ -21,7 +46,7 @@ Quiz
                 <div class="box box-primary">
                     <div id="countdown" class="mb-2"></div>
                         <div class="box-body" id="datapertanyaan">
-                            @include('backend/tentor.hasilquizpaginator')
+                            @include('backend/admin/quiz.hasilquizpaginator')
                         </div>
                 </div>
             </div>
@@ -48,6 +73,9 @@ Quiz
             history.pushState({
                 page: page
             }, "", myurl);
+            $('html, body').animate({
+                scrollTop: 0
+            }, 'slow');
         });
 
         // Tangani perubahan state saat tombol navigasi browser digunakan
@@ -100,6 +128,27 @@ Quiz
 
     // Panggil fungsi untuk mengaktifkan listener pada saat halaman dimuat
     document.addEventListener('DOMContentLoaded', activateEventListeners);
+</script>
+<script>
+    function goToQuestion(questionNum) {
+        // Hitung halaman yang sesuai dengan nomor pertanyaan
+        var currentPage = Math.ceil(questionNum / {{$halaman->tampilan_soal}});
+
+        // Ambil URL halaman sesuai dengan nomor halaman
+        var url = "{{ route('detaildatahasilquiztentor.detail', ['id' => $modelhasilquiz->id]) }}" + "?page=" + currentPage;
+
+        // Kirim permintaan AJAX untuk memuat halaman
+        // saveToDatabase();
+        getData(url);
+        history.pushState({
+            page: currentPage
+        }, "", url);
+
+        // Geser ke bagian atas halaman
+        $('html, body').animate({
+            scrollTop: 0
+        }, 'slow');
+    }
 </script>
 
 @endsection

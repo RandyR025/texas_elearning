@@ -64,20 +64,16 @@ function cekQuiz($quiz, $user, $jadwal){
     }
 }
 function cekQuizPrevious($user, $jadwal){
-    $model = Jadwal::where('id', '=', $jadwal)->first();
+    // $model = Jadwal::where('id', '=', $jadwal)->first();
     $query = DetailHasil::where([
         ['user_id','=',$user],
-        ['jadwal_id','=',$model->prev_quiz],
+        ['jadwal_id','=',$jadwal],
     ])->count();
-    if ($model->prev_quiz == null) {
-        return true;
-    }else {
         if ($query == 1) {
             return true;
         }else {
             return false;
         }
-    }
 }
 function hasilText($jawaban,$user,$tanggal){
     $query = HasilText::where([

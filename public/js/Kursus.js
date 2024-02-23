@@ -1,5 +1,5 @@
 /* Menampilkan Data */
-var quiztable = $("#dataquiz").DataTable({
+var kursustable = $("#datakursus").DataTable({
     processing: true,
     serverSide: true,
     paging: true,
@@ -10,7 +10,7 @@ var quiztable = $("#dataquiz").DataTable({
     autoWidth: false,
     responsive: true,
     ajax: {
-        url: "/dataquiz/data",
+        url: "/datakursus/data",
         type: "GET",
         headers: {
             "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
@@ -23,15 +23,14 @@ var quiztable = $("#dataquiz").DataTable({
                 return meta.row + 1;
             }
         },
-        { data: "judul_quiz", name: "judul_quiz" },
-        { data: "nama_kategori", name: "nama_kategori" },
+        { data: "kursus", name: "kursus" },
         {
             data: "id",
             render: function (data, type, full, meta) {
                 return (
                     '<button value="' +
                     data +
-                    '" class="btn btn-xs btn-primary edit_dataquiz"><i class="fa fa-edit"></i></button>'
+                    '" class="btn btn-xs btn-primary edit_datakursus"><i class="fa fa-edit"></i></button>'
                 );
             },
             orderable: false,
@@ -43,19 +42,7 @@ var quiztable = $("#dataquiz").DataTable({
                 return (
                     '<button value="' +
                     data +
-                    '" class="btn btn-xs btn-danger delete_dataquiz"><i class="fa fa-trash"></i></button>'
-                );
-            },
-            orderable: false,
-            searchable: false,
-        },
-        {
-            data: "id",
-            render: function (data, type, full, meta) {
-                return (
-                    '<a href="/dataquiz/pertanyaan/' +
-                    data +
-                    '" class="btn btn-xs btn-danger view_dataquiz"><i class="fa fa-eye"></i></a>'
+                    '" class="btn btn-xs btn-danger delete_datakursus"><i class="fa fa-trash"></i></button>'
                 );
             },
             orderable: false,
@@ -63,7 +50,7 @@ var quiztable = $("#dataquiz").DataTable({
         },
     ],
     createdRow: function (row, data, dataIndex) {
-        // Menambahkan kelas untuk memastikan nomor urut sesuai dengan urutan DataTable
+        // Menambahkan kursus untuk memastikan nomor urut sesuai dengan urutan DataTable
         $(row).find('td:eq(0)').addClass('text-center');
     }
 });
@@ -71,7 +58,7 @@ var quiztable = $("#dataquiz").DataTable({
 
 /* Tambah Data */
 $(function () {
-    $("#dataquiz_form").on("submit", function (e) {
+    $("#datakursus_form").on("submit", function (e) {
         e.preventDefault();
         $.ajaxSetup({
             headers: {
@@ -101,21 +88,8 @@ $(function () {
                         icon: "success",
                         title: "Berhasil Di Tambah!",
                     });
-                    quiztable.ajax.reload();
-                    $("#dataquiz_form")[0].reset();
-                    resetselect2();
-                    $("#gambar_quiz").val("");
-                    $("#audio_quiz").val("");
-
-                    // Reset the image preview
-                    $("#image_preview").attr("src", "");
-                    $("#image_preview").css("display", "none");
-
-                    $("#audio_preview").attr("src", "");
-                    $("#audio_preview").css("display", "none");
-
-                    // Reset the custom file label
-                    $("#fileLabel").html("Choose file");
+                    kursustable.ajax.reload();
+                    $("#datakursus_form")[0].reset();
                     $(".text-danger").text("");
                 }
             },
@@ -124,13 +98,13 @@ $(function () {
 });
 
 /* Edit Data */
-$(document).on("click", ".edit_dataquiz", function (e) {
+$(document).on("click", ".edit_datakursus", function (e) {
     e.preventDefault();
-    var quiz_id = $(this).val();
-    $("#editquizmodal").modal("show");
+    var kursus_id = $(this).val();
+    $("#editkursusmodal").modal("show");
     $.ajax({
         type: "GET",
-        url: "/dataquiz/edit/" + quiz_id,
+        url: "/datakursus/edit/" + kursus_id,
         success: function (response) {
             console.log(response);
             if (response.status == 404) {
@@ -138,54 +112,9 @@ $(document).on("click", ".edit_dataquiz", function (e) {
                 $("#success_message").addClass("alert alert-danger");
                 $("#success_message").text(response.message);
             } else {
-                // $("#edit_id").val(quiz_id);
-                $("#hidden_id").val(quiz_id);
-                $("#editjudul_quiz").val(response.modelquiz.judul_quiz);
-                $("#cekaudio").val(response.modelquiz.audio_quiz);
-                $("#editkategori")
-                    .val(response.modelquiz.kategori_id)
-                    .trigger("change");
-                var user_ids = JSON.parse(response.modelquiz.user_id);
-                var selectedValues = [];
-
-                $.each(user_ids, function (index, user_id) {
-                    selectedValues.push(user_id);
-                });
-                $("#edittentor").val(selectedValues);
-                $("#edittentor").trigger("change");
-
-                if (response.modelquiz.audio_quiz != null) {
-                    $("#editaudio_preview").html(
-                        '<audio controls id="editaudio_player"></audio>'
-                    );
-                    $("#editaudio_player").attr(
-                        "src",
-                        "audios_quiz/" + response.modelquiz.audio_quiz
-                    );
-                var removeButton = document.createElement('button');
-                removeButton.innerHTML = 'Remove Audio';
-                removeButton.onclick = function() {
-                $("#editaudio_preview").html("");
-                $("#editfileLabeledit").html('Choose file');
-                $("#editaudio_quiz").val(null); // Reset the input value
-                $("#cekaudio").val(null); // Reset the input value
-                };
-                $("#editaudio_preview").append(removeButton);
-                }
-                if (response.modelquiz.audio_quiz == null) {
-                    $("#editaudio_preview").html("");
-                }
-                if (response.modelquiz.gambar_quiz != null) {
-                    $("#editimage_preview").attr(
-                        "src",
-                        "images_quiz/" + response.modelquiz.gambar_quiz
-                    );
-                    $("#editimage_preview").css("display", "block");
-                    $("#editgambar_quiz").val(response.modelquiz.gambar_quiz);
-                } else {
-                    $("#editimage_preview").attr("src", "");
-                    $("#editimage_preview").css("display", "block");
-                }
+                // $("#edit_id").val(kursus_id);
+                $("#hidden_id").val(kursus_id);
+                $("#editnama_kursus").val(response.modelkursus.kursus);
             }
         },
     });
@@ -193,7 +122,7 @@ $(document).on("click", ".edit_dataquiz", function (e) {
 /* Edit Data */
 
 /* Update Data */
-$(document).on("submit", "#dataquizedit_form", function (e) {
+$(document).on("submit", "#datakursusedit_form", function (e) {
     e.preventDefault();
     $.ajaxSetup({
         headers: {
@@ -201,12 +130,12 @@ $(document).on("submit", "#dataquizedit_form", function (e) {
         },
     });
 
-    var quiz_id = $("#hidden_id").val();
-    let EditformData = new FormData($("#dataquizedit_form")[0]);
+    var kursus_id = $("#hidden_id").val();
+    let EditformData = new FormData($("#datakursusedit_form")[0]);
 
     $.ajax({
         type: "POST",
-        url: "/dataquiz/update/" + quiz_id,
+        url: "/datakursus/update/" + kursus_id,
         data: EditformData,
         contentType: false,
         processData: false,
@@ -227,17 +156,9 @@ $(document).on("submit", "#dataquizedit_form", function (e) {
                     icon: "success",
                     title: "Berhasil Di Update!",
                 });
-                quiztable.ajax.reload();
-                $("#editgambar_quiz").val("");
-
-                // Reset the image preview
-                $("#editimage_preview").attr("src", "");
-                $("#editimage_preview").css("display", "none");
-
-                // Reset the custom file label
-                $("#fileLabeledit").html("Choose file");
-                $("#editquizmodal").modal("hide");
-                $("#dataquizedit_form")[0].reset();
+                kursustable.ajax.reload();
+                $("#editkursusmodal").modal("hide");
+                $("#datakursusedit_form")[0].reset();
             }
         },
     });
@@ -245,9 +166,9 @@ $(document).on("submit", "#dataquizedit_form", function (e) {
 /* Update Data */
 
 /* Hapus Data */
-$(document).on("click", ".delete_dataquiz", function (e) {
+$(document).on("click", ".delete_datakursus", function (e) {
     e.preventDefault();
-    var quiz_id = $(this).val();
+    var kursus_id = $(this).val();
     const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",
@@ -269,17 +190,15 @@ $(document).on("click", ".delete_dataquiz", function (e) {
             if (result.isConfirmed) {
                 $.ajaxSetup({
                     headers: {
-                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                            "content"
-                        ),
+                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
                     },
                 });
                 $.ajax({
                     type: "DELETE",
-                    url: "/dataquiz/delete/" + quiz_id,
+                    url: "/datakursus/delete/" + kursus_id,
                     success: function (response) {
                         console.log(response);
-                        quiztable.ajax.reload();
+                        kursustable.ajax.reload();
                     },
                 });
 
@@ -288,7 +207,9 @@ $(document).on("click", ".delete_dataquiz", function (e) {
                     "Data Telah Di Hapus",
                     "success"
                 );
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
+            } else if (
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
                 swalWithBootstrapButtons.fire(
                     "Batal",
                     "Data Anda Aman :D",
@@ -297,16 +218,45 @@ $(document).on("click", ".delete_dataquiz", function (e) {
             }
         });
 });
-
-/* Fungsi */
-function resetselect2() {
-    $(".kategori").select2("destroy");
-    $(".kategori").select2({
-        theme: "bootstrap4",
-    });
-    $(".tentor").select2("destroy");
-    $(".tentor").select2({
-        theme: "bootstrap4",
-    });
-}
-/* Fungsi */
+/* Hapus Data */
+// $(function () {
+//     $("#datasiswa_form").on("submit", function (e) {
+//         e.preventDefault();
+//         $.ajaxSetup({
+//             headers: {
+//                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+//             },
+//         });
+//         let formData = new FormData($("#datasiswa_form")[0]);
+//         $.ajax({
+//             type: "POST",
+//             url: "/datasiswa/tambah",
+//             data: formData,
+//             processData: false,
+//             dataType: "json",
+//             contentType: false,
+//             beforeSend: function () {
+//                 $(document).find("span.error-text").text("");
+//             },
+//             success: function (response) {
+//                 console.log(response);
+//                 if (response.status == 400) {
+//                     $("#saveform_errList").html("");
+//                     $("#saveform_errList").addClass("alert alert-danger");
+//                     $.each(response.errors, function (prefix, val) {
+//                         $("span." + prefix + "_error").text(val[0]);
+//                     });
+//                 } else {
+//                     Toast.fire({
+//                         icon: "success",
+//                         title: "Berhasil Di Tambah!",
+//                     });
+//                     siswatable.ajax.reload();
+//                     $("#datasiswa_form")[0].reset();
+//                     $(".text-danger").text("");
+//                 }
+//             },
+//         });
+//     });
+// });
+/* Tambah Data */

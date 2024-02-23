@@ -61,7 +61,7 @@
                             <i class="fa fa-star"><span class="p-1">{{ Auth::user()->userTentor->Kursus->kursus }}</span></i>
                             @endif
                             @if (auth()->user()->level_id == 3)
-                            <i class="fa fa-star"><span class="p-1">{{ Auth::user()->userSiswa->Kelas->kelas }} ({{ Auth::user()->userSiswa->Kursus->kursus }})</span></i>
+                            <i class="fa fa-star"><span class="p-1">@if(isset(Auth::user()->userSiswa->Kelas->kelas)){{ Auth::user()->userSiswa->Kelas->kelas }}@else-@endif @if(isset(Auth::user()->userSiswa->Kursus->kursus))({{ Auth::user()->userSiswa->Kursus->kursus }})@else-@endif</span></i>
                             @endif
                             
                             <!-- <p class="text-sm text-muted"><i class="fas fa-map-marker-alt"></i></p> -->

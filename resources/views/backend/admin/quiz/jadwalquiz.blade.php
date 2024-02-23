@@ -44,6 +44,13 @@ Data Jadwal Quiz
                                             <span class="text-danger error-text kelas_error"></span>
                                         </div>
                                         <div class="form-group">
+                                            <label>Siswa</label>
+                                            <select class="form-control siswa" multiple="multiple" data-placeholder=" --Pilih Siswa-- " name="siswa[]" id="siswa" style="width: 100%;">
+                                                <!-- <option value="all">Semua</option> -->
+                                            </select>
+                                            <span class="text-danger error-text siswa_error"></span>
+                                        </div>
+                                        <div class="form-group">
                                             <label>Hak Akses</label>
                                             <select class="form-control tentor" multiple="multiple" data-placeholder=" --Pilih Tentor-- " name="tentor[]" id="tentor" style="width: 100%;">
                                                 <option value="all">Semua</option>
@@ -179,6 +186,13 @@ Data Jadwal Quiz
                                                 <span class="text-danger error-text editkelas_error"></span>
                                             </div>
                                             <div class="form-group">
+                                                <label>Siswa</label>
+                                                <select class="form-control editsiswa" multiple="multiple" data-placeholder=" --Pilih Siswa-- " name="editsiswa[]" id="editsiswa" style="width: 100%;">
+                                                <!-- <option value="all">Semua</option> -->
+                                                </select>
+                                                <span class="text-danger error-text editsiswa_error"></span>
+                                            </div>
+                                            <div class="form-group">
                                                 <label>Tentor</label>
                                                 <select class="form-control edittentor" multiple="multiple" data-placeholder=" --Pilih Tentor-- " name="edittentor[]" id="edittentor" style="width: 100%;">
                                                     <option value="all">Semua</option>
@@ -257,16 +271,20 @@ Data Jadwal Quiz
 @section('js')
 <script>
     $('#tanggal_mulai').datetimepicker({
-        format: 'YYYY-MM-DD'
+        format: 'YYYY-MM-DD HH:mm', 
+        icons: { time: 'far fa-clock' } 
     });
     $('#tanggal_berakhir').datetimepicker({
-        format: 'YYYY-MM-DD'
+        format: 'YYYY-MM-DD HH:mm', 
+        icons: { time: 'far fa-clock' }
     });
     $('#edittanggal_mulai').datetimepicker({
-        format: 'YYYY-MM-DD'
+        format: 'YYYY-MM-DD HH:mm', 
+        icons: { time: 'far fa-clock' }
     });
     $('#edittanggal_berakhir').datetimepicker({
-        format: 'YYYY-MM-DD'
+        format: 'YYYY-MM-DD HH:mm', 
+        icons: { time: 'far fa-clock' }
     });
     $('.nama_quiz').select2({
         theme: 'bootstrap4'
@@ -278,6 +296,12 @@ Data Jadwal Quiz
         theme: 'bootstrap4'
     })
     $('.edittentor').select2({
+        theme: 'bootstrap4'
+    })
+    $('.siswa').select2({
+        theme: 'bootstrap4'
+    })
+    $('.editsiswa').select2({
         theme: 'bootstrap4'
     })
     $('.kelas').select2({

@@ -154,7 +154,36 @@ $(document).on("click", ".edit_datajadwalquiz", function (e) {
                 $("#editquiz_sebelumnya")
                     .val(response.modeljadwalquiz.prev_quiz)
                     .trigger("change");
-                
+                    $.ajax({
+                        url: '/getsiswa/'+response.modeljadwalquiz.kelas_id,
+                        type: "GET",
+                        dataType: "json",
+                        success:function(res)
+                        {
+                          if(res){
+                             $('#editsiswa').empty();
+                            //  $('#edit_kode_subkriteria').append('<option hidden>Choose Course</option>');
+                            $('#editsiswa').append('<option value="all" hidden>Semua</option>'); 
+                             $.each(res, function(key, siswa){
+                               // console.log(subkriteria);
+                               $.each(siswa, function (key, value) {
+                                 $('select[name="editsiswa[]"]').append('<option value="'+ value.user_id +'">' + value.nama+ '</option>');
+                               });
+                               var siswa_id = JSON.parse(response.modeljadwalquiz.siswa_id);
+                               var selectedValuess = [];
+               
+                               $.each(siswa_id, function (index, siswa_id) {
+                                   selectedValuess.push(siswa_id);
+                               });
+                               $("#editsiswa").val(selectedValuess);
+                               $("#editsiswa").trigger("change");
+              
+                             });
+                         }else{
+                             $('#editsiswa').empty();
+                         }
+                      }
+                    });
 
                 $('#editquiz_sebelumnya').select2({
                     theme: 'bootstrap4',
@@ -307,8 +336,16 @@ function resetselect2() {
     $(".kelas").select2({
         theme: "bootstrap4",
     });
+    $(".siswa").select2("destroy");
+    $(".siswa").select2({
+        theme: "bootstrap4",
+    });
     $(".quiz_sebelumnya").select2("destroy");
     $(".quiz_sebelumnya").select2({
+        theme: "bootstrap4",
+    });
+    $(".group").select2("destroy");
+    $(".group").select2({
         theme: "bootstrap4",
     });
     initQuizSebelumnyaSelect2();
@@ -366,5 +403,75 @@ function initQuizSebelumnyaSelect2() {
 $(document).ready(function () {
     initQuizSebelumnyaSelect2();
 });
+
+$(document).ready(function() {
+    $('#kelas').on('change', function() {
+       var kelas = $(this).val();
+       $.ajaxSetup({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+       if(kelas) {
+           $.ajax({
+               url: '/getsiswa/'+kelas,
+               type: "GET",
+               dataType: "json",
+               success:function(response)
+               {
+                 if(response){
+                    $('#siswa').empty();
+                    $('#siswa').append('<option value="all" hidden>Semua</option>'); 
+                    $.each(response, function(key, siswa){
+                      console.log(siswa);
+                      $.each(siswa, function (key, value) {
+                        $('select[name="siswa[]"]').append('<option value="'+ value.user_id +'">' + value.nama+ '</option>');
+                      });
+                    });
+                }else{
+                    $('#siswa').empty();
+                }
+             }
+           });
+       }else{
+         $('#siswa').empty();
+       }
+    });
+    });
+
+    $(document).ready(function() {
+        $('#editkelas').on('change', function() {
+           var kelas = $(this).val();
+           $.ajaxSetup({
+            headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+           if(kelas) {
+               $.ajax({
+                   url: '/getsiswa/'+kelas,
+                   type: "GET",
+                   dataType: "json",
+                   success:function(response)
+                   {
+                     if(response){
+                        $('#editsiswa').empty();
+                        $('#editsiswa').append('<option value="all" hidden>Semua</option>'); 
+                        $.each(response, function(key, siswa){
+                          console.log(siswa);
+                          $.each(siswa, function (key, value) {
+                            $('select[name="editsiswa[]"]').append('<option value="'+ value.user_id +'">' + value.nama+ '</option>');
+                          });
+                        });
+                    }else{
+                        $('#editsiswa').empty();
+                    }
+                 }
+               });
+           }else{
+             $('#editsiswa').empty();
+           }
+        });
+        });
 
 
