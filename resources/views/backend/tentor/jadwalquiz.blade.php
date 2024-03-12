@@ -164,6 +164,17 @@ Data Jadwal Quiz
                                                 </select>
                                                 <span class="text-danger error-text editnama_quiz_error"></span>
                                             </div>
+                                            <div class="form-group" hidden>
+                                                <label>Tentor</label>
+                                                <select class="form-control edittentor" multiple="multiple" data-placeholder=" --Pilih Tentor-- " name="edittentor[]" id="edittentor" style="width: 100%;">
+                                                    <option value="all">Semua</option>
+                                                    <option value="Default">Default</option>
+                                                    @foreach($modeltentor as $tentor)
+                                                    <option value="{{ $tentor->user_id }}">{{ $tentor->nama}}</option>
+                                                    @endforeach
+                                                </select>
+                                                <span class="text-danger error-text edittentor_error"></span>
+                                            </div>
                                             <div class="form-group">
                                                 <label>Kelas</label>
                                                 <select class="form-control editkelas" style="width: 100%;" name="editkelas" id="editkelas">
@@ -289,7 +300,9 @@ Data Jadwal Quiz
     $('.editgroup').select2({
         theme: 'bootstrap4'
     })
-
+    $('.edittentor').select2({
+        theme: 'bootstrap4'
+    })
     function validateInput(input) {
         input.value = input.value.replace(/[^0-9]/g, '');
     }

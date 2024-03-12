@@ -46,7 +46,7 @@ Quiz
                 <div class="box box-primary">
                     <div id="countdown" class="mb-2"></div>
                         <div class="box-body" id="datapertanyaan">
-                            @include('backend/tentor.hasilquizpaginator')
+                            @include('backend/admin/quiz.hasilquizpaginator')
                         </div>
                 </div>
             </div>

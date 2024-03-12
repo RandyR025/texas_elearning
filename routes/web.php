@@ -176,7 +176,7 @@ Route::group(['middleware' => ['auth','web']], function () {
         Route::post('/datapertanyaantentor/tambah', [PertanyaanController::class, 'store'])->name('datapertanyaantentor.tambah');
         Route::get('/datapertanyaantentor/edit/{id}', [PertanyaanController::class, 'edit'])->name('datapertanyaantentor.edit');
         Route::post('/datapertanyaantentor/update/{id}', [PertanyaanController::class, 'update'])->name('datapertanyaantentor.update');
-        Route::delete('/datajawaban/delete/{id}', [PertanyaanController::class, 'jawabandelete'])->name('datajawaban.delete');
+        Route::delete('/datajawabantentor/delete/{id}', [PertanyaanController::class, 'jawabandelete'])->name('datajawaban.delete');
         Route::delete('/datapertanyaantentor/delete/{id}', [PertanyaanController::class, 'destroy'])->name('datapertanyaantentor.delete');
         Route::post('/updateOrderTentor', [PertanyaanController::class, 'updateOrder'])->name('updateOrderTentor');
         /* End Data Pertanyaan */
@@ -217,6 +217,7 @@ Route::group(['middleware' => ['auth','web']], function () {
         Route::get('/quizsiswa/cover/{id}/{tanggal}', [QuizController::class, 'quizSiswaCover'])->name('quizsiswacover');
         Route::post('/hasilpilihanquiz', [QuizController::class, 'HasilPilihanQuiz'])->name('hasilpilihanquiz');
         Route::post('/hasiltextquiz', [QuizController::class, 'HasilTextQuiz'])->name('hasiltextquiz');
+        Route::post('/hasilblankquiz', [QuizController::class, 'HasilBlankQuiz'])->name('hasilblakquiz');
         Route::post('/totalnilai', [QuizController::class, 'totalnilai'])->name('totalnilai');
         Route::get('/cekhasil/{id}/{tgl}', [QuizController::class, 'cekhasil'])->name('cekhasil');
         Route::get('/quizsiswahasil', [HasilQuizSiswaController::class, 'index'])->name('quizsiswahasil');

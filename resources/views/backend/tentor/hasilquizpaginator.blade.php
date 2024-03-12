@@ -28,19 +28,34 @@
                     $isAnswered = cekhasilPilihanAkhir($data->id, $modelhasilquiz->user_id, $data->jadwal);
                 } elseif ($data->tipe_pertanyaan == "Teks") {
                     $isAnswered = cekhasilTeks($data->id, $modelhasilquiz->user_id, $data->jadwal);
+                } elseif ($data->tipe_pertanyaan == "Blank_Teks") {
+                    $isAnswered = cekhasilBlank($data->id, $modelhasilquiz->user_id, $data->jadwal);
                 } else {
                     $isAnswered = "";
                 }
                 ?>
-                <div class="question-box @if($isAnswered) bg-success @else bg-light @endif" onclick="goToQuestion({{ $questionNumm }})" data-pertanyaan-id="{{$data->id}}">
+                <div class="question-box @if($isAnswered) bg-success @else bg-danger @endif" onclick="goToQuestion({{ $questionNumm }})" data-pertanyaan-id="{{$data->id}}">
                     {{ $questionNumm }}
                 </div>
                 @endforeach
             </div>
             @foreach($quiz as $key => $data)
             <h4 hidden>{{$questionNum}}</h4>
-            <h4 class="mt-3">Soal {{$questionNum++}}</h4>
+            <!-- <h4 class="mt-3">Soal {{$questionNum++}}</h4> -->
+            <?php
+                $rumpang  = $data->pertanyaan;
+            ?>
+            @foreach($pilihan[$key] as $jawaban)
+            <?php
+                $hasilText = hasilText($jawaban->id, $modelhasilquiz->user_id, $data->jadwal);
+                $rumpang = str_replace($jawaban->jawaban, '<input name="jawaban" id="jawaban'. $jawaban->id. '" placeholder="Isi jawaban" class="blank" data-jawaban-id="' . $jawaban->id . '" data-pertanyaan-id="' . $jawaban->pertanyaan_id . '" value="'.$hasilText.'" disabled/>', $rumpang);
+            ?>
+            @endforeach
+            @if($data->tipe_pertanyaan == "Blank_Teks")
+            <p>{!! $rumpang !!}</p>
+            @else
             <p>{!! $data->pertanyaan !!}</p>
+            @endif
             <ul class="list-group">
                 @foreach($pilihan[$key] as $jawaban)
                 @if($data->tipe_pertanyaan == "Pilihan")
@@ -70,7 +85,7 @@
             @if($quiz->currentPage() == $quiz->lastPage())
             <div class="row" style="margin-top: 20px;">
                 <div class="col-12 text-center">
-                    <a href="{{ route('datahasilquiztentor.data.detail', [$modelhasilquiz->jadwal_id])}}">
+                    <a href="{{ route('datahasilquiz.data.detail', [$modelhasilquiz->jadwal_id])}}">
                         <button class="btn btn-outline-primary btn-icon btn-icon-end sw-25 w-50">
                             <span>Kembali</span>
                         </button>
@@ -92,6 +107,8 @@
             $isAnswered = cekhasilPilihanAkhir($data->id, $modelhasilquiz->user_id, $data->jadwal);
         } elseif ($data->tipe_pertanyaan == "Teks") {
             $isAnswered = cekhasilTeks($data->id, $modelhasilquiz->user_id, $data->jadwal);
+        } elseif ($data->tipe_pertanyaan == "Blank_Teks") {
+            $isAnswered = cekhasilBlank($data->id, $modelhasilquiz->user_id, $data->jadwal);
         } else {
             $isAnswered = "";
         }
@@ -103,8 +120,21 @@
     </div>
     @foreach($quiz as $key => $data)
     <h4 hidden>{{$questionNum}}</h4>
-    <h4 class="mt-3">Soal {{$questionNum++}}</h4>
-    <p>{!! $data->pertanyaan !!}</p>
+    <!-- <h4 class="mt-3">Soal {{$questionNum++}}</h4> -->
+    <?php
+                $rumpang  = $data->pertanyaan;
+            ?>
+            @foreach($pilihan[$key] as $jawaban)
+            <?php
+                $hasilText = hasilText($jawaban->id, $modelhasilquiz->user_id, $data->jadwal);
+                $rumpang = str_replace($jawaban->jawaban, '<input name="jawaban" id="jawaban'. $jawaban->id. '" placeholder="Isi jawaban" class="blank" data-jawaban-id="' . $jawaban->id . '" data-pertanyaan-id="' . $jawaban->pertanyaan_id . '" value="'.$hasilText.'" disabled/>', $rumpang);
+            ?>
+            @endforeach
+            @if($data->tipe_pertanyaan == "Blank_Teks")
+            <p>{!! $rumpang !!}</p>
+            @else
+            <p>{!! $data->pertanyaan !!}</p>
+            @endif
     <ul class="list-group disabled">
         @foreach($pilihan[$key] as $jawaban)
         @if($data->tipe_pertanyaan == "Pilihan")

@@ -197,6 +197,38 @@ $(document).on("click", ".edit_datapertanyaan", function (e) {
                             "</div>"
                     );
                 });
+                }else if(response.modelpertanyaan.tipe_pertanyaan == "Blank_Teks"){
+                    $("#container-input-db").html("");
+                $.each(response.modeljawaban, function (key, item) {
+                    $("#container-input-db").append(
+                        '<div class="form-group">' +
+                            '<div class="input-group">' +
+                            '<input type="text" class="form-control col-md-1" id="editbobotblank' +
+                            (key + 1) +
+                            '" name="editbobotblank[]" placeholder="Bobot" value="' +
+                            item.point +
+                            '" oninput="validasiInputedit(' +
+                            (key + 1) +
+                            ')">' +
+                            '<input type="text" class="form-control col-md-5" id="editjawabanblank' +
+                            (key + 1) +
+                            '" name="editjawabanblank[]" value="' +
+                            item.jawaban +
+                            '" oninput="validasiInputedit(' +
+                            (key + 1) +
+                            ')">' +
+                            '<span class="input-group-btn">' +
+                            '<button type="button" class="btn btn-danger" value="' +
+                            item.id +
+                            '" onclick="hapusInputedit(this)"><i class="fa fa-trash"></i></button>' +
+                            "</span>" +
+                            '<input type="hidden" class="form-control col-md-5" id="id" name="id[]" value="' +
+                            item.id +
+                            '"' +
+                            "</div>" +
+                            "</div>"
+                    );
+                });
                 }else if (response.modelpertanyaan.tipe_pertanyaan == "Teks") {
                     if (response.modeljawaban[0].jawaban == null) {
                         $("#edittextbobot").val(response.modeljawaban[0].point);
@@ -264,6 +296,8 @@ $(document).on("submit", "#datapertanyaanedit_form", function (e) {
                 });
                 pertanyaantable.ajax.reload();
                 $("#editpertanyaanmodal").modal("hide");
+                $('#container-input-db').empty();
+                $('#container-input-d').empty();
                 $("#datapertanyaanedit_form")[0].reset();
             }
         },

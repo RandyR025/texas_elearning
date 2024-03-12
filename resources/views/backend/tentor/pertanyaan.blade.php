@@ -33,6 +33,7 @@ Data Pertanyaan
                                 <select class="form-control tipe_pertanyaan" style="width: 50%;" name="tipe_pertanyaan" id="tipe_pertanyaan">
                                     <option value="Pilihan">Pilihan Ganda</option>
                                     <option value="Teks">Teks</option>
+                                    <option value="Blank_Teks">Blank Teks</option>
                                     <option value="Custom Banner">Custom Banner</option>
                                 </select>
                                 <span class="text-danger error-text tipe_pertanyaan_error"></span>
@@ -99,6 +100,7 @@ Data Pertanyaan
                                         <select class="form-control edittipe_pertanyaan" style="width: 50%;" name="edittipe_pertanyaan" id="edittipe_pertanyaan">
                                             <option value="Pilihan">Pilihan Ganda</option>
                                             <option value="Teks">Teks</option>
+                                            <option value="Blank_Teks">Blank Teks</option>
                                             <option value="Custom Banner">Custom Banner</option>
                                         </select>
                                         <span class="text-danger error-text edittipe_pertanyaan_error"></span>
@@ -116,6 +118,9 @@ Data Pertanyaan
                                     </div>
 
                                     <div id="container-input-d">
+                                        <!-- Input dinamis akan ditambahkan di sini -->
+                                    </div>
+                                    <div id="container-input-db">
                                         <!-- Input dinamis akan ditambahkan di sini -->
                                     </div>
                                 </div>
@@ -139,11 +144,15 @@ Data Pertanyaan
         $("#tipe_pertanyaan").change(function() {
             var selectedValue = $(this).val();
 
-            if (selectedValue == "Pilihan") {
+            if (selectedValue == "Pilihan" || selectedValue == "Blank_Teks") {
                 $('#tambahpilihan').prop("hidden", false);
                 $('#container-input-dinamis').prop("hidden", false);
                 $('#text_input').prop("hidden", true);
+                $('#container-input-dinamis').empty();
                 tambahInput();
+                if (selectedValue == "Blank_Teks") {
+                    $('#submitBtn').prop('disabled', false);
+                }
             } else if (selectedValue == "Teks") {
                 $('#tambahpilihan').prop("hidden", true);
                 $('#container-input-dinamis').prop("hidden", true);
@@ -164,18 +173,31 @@ Data Pertanyaan
             if (selectedValue == "Pilihan") {
                 $('#tambahpilihanedit').prop("hidden", false);
                 $('#container-input-d').prop("hidden", false);
+                $('#container-input-db').prop("hidden", true)
                 $('#text_inputedit').prop("hidden", true);
                 if ($('#container-input-d').children().length > 1) {
-                    tambahInputedit();
+                    // tambahInputedit();
                 }
-            } else if (selectedValue == "Teks") {
+                validasiInputedit();
+            } else if (selectedValue == "Blank_Teks") {
+                $('#tambahpilihanedit').prop("hidden", false);
+                $('#container-input-d').prop("hidden", true);
+                $('#container-input-db').prop("hidden", false);
+                $('#text_inputedit').prop("hidden", true);
+                if ($('#container-input-db').children().length > 1) {
+                    // tambahInputedit();
+                }
+                $('#submitBtnedit').prop('disabled', false);
+            }else if (selectedValue == "Teks") {
                 $('#tambahpilihanedit').prop("hidden", true);
                 $('#container-input-d').prop("hidden", true);
+                $('#container-input-db').prop("hidden", true);
                 $('#text_inputedit').prop("hidden", false);
                 $('#submitBtnedit').prop('disabled', false);
             } else if (selectedValue == "Custom Banner") {
                 $('#tambahpilihanedit').prop("hidden", true);
                 $('#container-input-d').prop("hidden", true);
+                $('#container-input-db').prop("hidden", true);
                 $('#text_inputedit').prop("hidden", false);
                 $('#submitBtnedit').prop('disabled', false);
             }
@@ -184,11 +206,11 @@ Data Pertanyaan
 
     function tambahInput() {
         var nomorInput = $('#container-input-dinamis .form-group').length + 1;
-
-        var inputBaru = '<div class="form-group">' +
+        if ($('#tipe_pertanyaan').val() == "Blank_Teks" ) {
+            var inputBaru = '<div class="form-group">' +
             '<div class="input-group">' +
-            '<input type="text" class="form-control col-md-1" id="bobot' + nomorInput + '" name="bobot[]" placeholder="Bobot" oninput="validasiInput(' + nomorInput + ')" value="0">' +
-            '<input type="text" class="form-control col-md-5" id="jawaban' + nomorInput + '" name="jawaban[]" oninput="validasiInput(' + nomorInput + ')">' +
+            '<input type="text" class="form-control col-md-1" id="bobot' + nomorInput + '" name="bobot[]" placeholder="Bobot" oninput="validasiInput(' + nomorInput + ')" value="1">' +
+            '<input type="text" class="form-control col-md-5" id="jawaban' + nomorInput + '" name="jawaban[]" oninput="validasiInput(' + nomorInput + ')" value="{blank_'+ nomorInput +'}">' +
             '<span class="input-group-btn">' +
             '<button type="button" class="btn btn-danger" onclick="hapusInput(this)"><i class="fa fa-trash"></i></button>' +
             '</span>' +
@@ -196,27 +218,55 @@ Data Pertanyaan
             '<span class="text-danger error-text bobot' + nomorInput + '_error"></span>' +
             '<span class="text-danger error-text jawaban' + nomorInput + '_error"></span>' +
             '</div>';
-        '</div>';
+        '</div>';    
         $('#container-input-dinamis').append(inputBaru);
-        $('#submitBtn').prop('disabled', true);
+        } else{
+            var inputBaru = '<div class="form-group">' +
+                '<div class="input-group">' +
+                '<input type="text" class="form-control col-md-1" id="bobot' + nomorInput + '" name="bobot[]" placeholder="Bobot" oninput="validasiInput(' + nomorInput + ')" value="0">' +
+                '<input type="text" class="form-control col-md-5" id="jawaban' + nomorInput + '" name="jawaban[]" oninput="validasiInput(' + nomorInput + ')">' +
+                '<span class="input-group-btn">' +
+                '<button type="button" class="btn btn-danger" onclick="hapusInput(this)"><i class="fa fa-trash"></i></button>' +
+                '</span>' +
+                '</div>' +
+                '<span class="text-danger error-text bobot' + nomorInput + '_error"></span>' +
+                '<span class="text-danger error-text jawaban' + nomorInput + '_error"></span>' +
+                '</div>';
+            '</div>';
+            $('#container-input-dinamis').append(inputBaru);
+            $('#submitBtn').prop('disabled', true);
+        }
     }
 
     function tambahInputedit() {
         var nomorInput = $('#container-input-d .form-group').length + 1;
-
-        var inputBaru = '<div class="form-group">' +
-            '<div class="input-group">' +
-            '<input type="text" class="form-control col-md-1" id="editbobot' + nomorInput + '" name="editbobottambah[]" placeholder="Bobot" oninput="validasiInputedit(' + nomorInput + ')">' +
-            '<input type="text" class="form-control col-md-5" id="editjawaban' + nomorInput + '" name="editjawabantambah[]" oninput="validasiInputedit(' + nomorInput + ')">' +
-            '<span class="input-group-btn">' +
-            '<button type="button" class="btn btn-danger" onclick="hapusInput1(this)"><i class="fa fa-trash"></i></button>' +
-            '</span>' +
-            '</div>' +
-            '<span class="text-danger error-text jawaban' + nomorInput + '_error"></span>' +
-            '</div>';
-
-        $('#container-input-d').append(inputBaru);
-        $('#submitBtnedit').prop('disabled', true);
+        var nomorInput = $('#container-input-db .form-group').length + 1;
+        if ($('#edittipe_pertanyaan').val() == "Blank_Teks" ) {
+            var inputBaru = '<div class="form-group">' +
+                '<div class="input-group">' +
+                '<input type="text" class="form-control col-md-1" id="editbobotblank' + nomorInput + '" name="editbobottambahblank[]" placeholder="Bobot" oninput="validasiInputedit(' + nomorInput + ')" value="1">' +
+                '<input type="text" class="form-control col-md-5" id="editjawabanblank' + nomorInput + '" name="editjawabantambahblank[]" oninput="validasiInputedit(' + nomorInput + ')" value="{blank_'+ nomorInput +'}">' +
+                '<span class="input-group-btn">' +
+                '<button type="button" class="btn btn-danger" onclick="hapusInput1(this)"><i class="fa fa-trash"></i></button>' +
+                '</span>' +
+                '</div>' +
+                '<span class="text-danger error-text jawaban' + nomorInput + '_error"></span>' +
+                '</div>';
+                $('#container-input-db').append(inputBaru);    
+        } else{
+            var inputBaru = '<div class="form-group">' +
+                '<div class="input-group">' +
+                '<input type="text" class="form-control col-md-1" id="editbobot' + nomorInput + '" name="editbobottambah[]" placeholder="Bobot" oninput="validasiInputedit(' + nomorInput + ')" value="0">' +
+                '<input type="text" class="form-control col-md-5" id="editjawaban' + nomorInput + '" name="editjawabantambah[]" oninput="validasiInputedit(' + nomorInput + ')">' +
+                '<span class="input-group-btn">' +
+                '<button type="button" class="btn btn-danger" onclick="hapusInput1(this)"><i class="fa fa-trash"></i></button>' +
+                '</span>' +
+                '</div>' +
+                '<span class="text-danger error-text jawaban' + nomorInput + '_error"></span>' +
+                '</div>';
+                $('#container-input-d').append(inputBaru);
+                $('#submitBtnedit').prop('disabled', true);
+        }
     }
 
     function hapusInput1(button) {

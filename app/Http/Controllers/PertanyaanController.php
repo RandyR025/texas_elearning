@@ -75,6 +75,14 @@ class PertanyaanController extends Controller
                 $modeljawaban->jawaban = $request->textjawaban;
                 $modeljawaban->pertanyaan_id = $modelpertanyaan->id;
                 $modeljawaban->save();
+            } elseif ($request->tipe_pertanyaan == "Blank_Teks") {
+                foreach ($request->input('bobot') as $key => $bobot) {
+                    $modeljawaban = new Jawaban; // Sesuaikan dengan model Anda
+                    $modeljawaban->point = $bobot;
+                    $modeljawaban->jawaban = $request->input('jawaban')[$key];
+                    $modeljawaban->pertanyaan_id = $modelpertanyaan->id;
+                    $modeljawaban->save();
+                }
             }
 
             return response()->json([
@@ -162,10 +170,41 @@ class PertanyaanController extends Controller
                         if ($request->tipe == "Custom Banner") {
                             Jawaban::where('pertanyaan_id', '=', $id)->delete();
                         }
+                        if ($request->tipe == "Blank_Teks") {
+                            Jawaban::where('pertanyaan_id', '=', $id)->delete();
+                        }
                         foreach ($request->input('editbobottambah') as $key => $bobot) {
                             $modeljawaban = new Jawaban; // Sesuaikan dengan model Anda
                             $modeljawaban->point = $bobot;
                             $modeljawaban->jawaban = $request->input('editjawabantambah')[$key];
+                            $modeljawaban->pertanyaan_id = $id;
+                            $modeljawaban->save();
+                        }
+                    }
+                } elseif ($request->edittipe_pertanyaan == "Blank_Teks") {
+                    if ($request->input('editbobotblank')) {
+                        foreach ($request->input('editbobotblank') as $key => $bobot) {
+                            $modeljawaban = Jawaban::where('id', $request->id[$key]); // Sesuaikan dengan model Anda
+                            $modeljawaban->update([
+                                'point' => $bobot,
+                                'jawaban' => $request->input('editjawabanblank')[$key],
+                            ]);
+                        }
+                    }
+                    if ($request->input('editbobottambahblank')) {
+                        if ($request->tipe == "Teks") {
+                            Jawaban::where('pertanyaan_id', '=', $id)->delete();
+                        }
+                        if ($request->tipe == "Custom Banner") {
+                            Jawaban::where('pertanyaan_id', '=', $id)->delete();
+                        }
+                        if ($request->tipe == "Pilihan") {
+                            Jawaban::where('pertanyaan_id', '=', $id)->delete();
+                        }
+                        foreach ($request->input('editbobottambahblank') as $key => $bobot) {
+                            $modeljawaban = new Jawaban; // Sesuaikan dengan model Anda
+                            $modeljawaban->point = $bobot;
+                            $modeljawaban->jawaban = $request->input('editjawabantambahblank')[$key];
                             $modeljawaban->pertanyaan_id = $id;
                             $modeljawaban->save();
                         }

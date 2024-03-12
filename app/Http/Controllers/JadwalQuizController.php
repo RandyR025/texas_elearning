@@ -213,6 +213,7 @@ class JadwalQuizController extends Controller
         $jadwal = Jadwal::select('jadwalquiz.id', 'jadwalquiz.quiz_id', 'jadwalquiz.tanggal_mulai', 'jadwalquiz.tanggal_berakhir', 'jadwalquiz.waktu_quiz', 'jadwalquiz.tampilan_soal', 'quiz.judul_quiz', 'kelas.kelas')
             ->join('quiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')
             ->join('kelas', 'jadwalquiz.kelas_id', '=', 'kelas.id')
+            ->orderBy('jadwalquiz.id','DESC')
             ->get();
 
         return DataTables::of($jadwal)->make(true);

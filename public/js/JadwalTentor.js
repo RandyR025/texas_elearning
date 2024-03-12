@@ -216,6 +216,15 @@ $(document).on("click", ".edit_datajadwalquiztentor", function (e) {
                     $.each(user_ids, function (index, user_id) {
                         selectedValues.push(user_id);
                     });
+
+                    var user_ids = JSON.parse(response.modeljadwalquiz.user_id);
+                var selectedValues = [];
+
+                $.each(user_ids, function (index, user_id) {
+                    selectedValues.push(user_id);
+                });
+                $("#edittentor").val(selectedValues);
+                $("#edittentor").trigger("change");
             }
         },
     });

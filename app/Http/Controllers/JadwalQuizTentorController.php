@@ -7,6 +7,7 @@ use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\Quiz;
 use App\Models\Siswa;
+use App\Models\Tentor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use DataTables;
@@ -36,7 +37,8 @@ class JadwalQuizTentorController extends Controller
                 ->orWhereJsonContains('quiz.user_id', json_encode([$user_id]))
                 ->orWhereJsonContains('quiz.user_id', ["all"]);
         })->whereDate('jadwalquiz.updated_at', '=', $currentDate)->get();
-        return view('backend/tentor.jadwalquiz', compact('modelquiz', 'modelkelas', 'modelprevquiz', 'modelgroup'));
+        $modeltentor = Tentor::join('users', 'tentor.user_id', '=', 'users.id')->where('users.level_id', '=', 2)->get();
+        return view('backend/tentor.jadwalquiz', compact('modelquiz', 'modelkelas', 'modelprevquiz', 'modelgroup','modeltentor'));
     }
 
     /**
@@ -164,7 +166,7 @@ class JadwalQuizTentorController extends Controller
                         'tampilan_soal' => $request->input('edittampilan_soal'),
                         'kelas_id' => $request->input('editkelas'),
                         'group_id' => $request->input('editgroup'),
-                        'user_id' => json_encode([strval(Auth::user()->id)]),
+                        'user_id' => json_encode($request->input('edittentor')),
                         'siswa_id' => json_encode($request->input('editsiswa')),
                         'prev_quiz' => $request->input('editquiz_sebelumnya'),
                     ]);
@@ -176,7 +178,7 @@ class JadwalQuizTentorController extends Controller
                         'waktu_quiz' => $request->input('editwaktu_quiz'),
                         'tampilan_soal' => $request->input('edittampilan_soal'),
                         'kelas_id' => $request->input('editkelas'),
-                        'user_id' => json_encode([strval(Auth::user()->id)]),
+                        'user_id' => json_encode($request->input('edittentor')),
                         'siswa_id' => json_encode($request->input('editsiswa')),
                         'group_id' => $request->input('editgroup'),
                         'prev_quiz' => $request->input('editquiz_sebelumnya'),

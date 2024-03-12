@@ -4,6 +4,7 @@ use App\Models\DetailHasil;
 use App\Models\HasilPilihan;
 use App\Models\HasilText;
 use App\Models\Jadwal;
+use App\Models\Jawaban;
 use App\Models\Pertanyaan;
 
 function hasilPilihan($pilihan,$user,$tanggal){
@@ -87,11 +88,33 @@ function hasilText($jawaban,$user,$tanggal){
         return $hasiltext;
     }
 }
+function cekhasilBlank($pertanyaan,$user,$tanggal){
+    $query = HasilText::where([
+        ['user_id','=',$user],
+        ['pertanyaan_id','=',$pertanyaan],
+        ['jadwal_id','=',$tanggal],
+        ['jawaban','!=',null],
+    ])->count();
+    $query1 = Jawaban::where([
+        ['pertanyaan_id','=',$pertanyaan],
+    ])->count();
+    $query2 = HasilText::where([
+        ['user_id','=',$user],
+        ['pertanyaan_id','=',$pertanyaan],
+        ['jadwal_id','=',$tanggal],
+    ])->first();
+    if ($query == $query1 && $query2->jawaban !== null) {
+        return true;
+    }else {
+        return false;
+    }
+}
 function cekhasilTeks($pertanyaan,$user,$tanggal){
     $query = HasilText::where([
         ['user_id','=',$user],
         ['pertanyaan_id','=',$pertanyaan],
         ['jadwal_id','=',$tanggal],
+        ['jawaban','!=',null],
     ])->count();
     $query2 = HasilText::where([
         ['user_id','=',$user],

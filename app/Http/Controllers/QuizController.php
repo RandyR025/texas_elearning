@@ -393,16 +393,47 @@ class QuizController extends Controller
         }
     }
 
+    public function HasilBlankQuiz(Request $request)
+    {
+        // return $request->pertanyaan_id;
+        $query = HasilText::where([
+            ['user_id', '=', Auth::user()->id],
+            ['pertanyaan_id', '=', $request->pertanyaan_id],
+            ['jadwal_id', '=', $request->jadwal_id],
+            ['jawaban_id', '=', $request->jawaban_id],
+        ])->count();
+
+        if ($query == 0) {
+            $hasilText = new HasilText;
+            $hasilText->jawaban_id = $request->jawaban_id;
+            $hasilText->pertanyaan_id = $request->pertanyaan_id;
+            $hasilText->jadwal_id = $request->jadwal_id;
+            $hasilText->jawaban = $request->data;
+            $hasilText->user_id = Auth::user()->id;
+            $hasilText->save();
+        } else {
+            HasilText::where([
+                ['user_id', '=', Auth::user()->id],
+                ['pertanyaan_id', '=', $request->pertanyaan_id],
+                ['jadwal_id', '=', $request->jadwal_id],
+                ['jawaban_id', '=', $request->jawaban_id],
+            ])->update(['jawaban' => $request->data]);
+        }
+    }
+
     public function totalnilai(Request $request)
     {
         $jawaban = 0;
         $hasil = HasilPilihan::join('jadwalquiz', 'hasilpilihan.jadwal_id', '=', 'jadwalquiz.id')
             ->join('pertanyaan', 'hasilpilihan.pertanyaan_id', '=', 'pertanyaan.id')
             ->join('jawabanpertanyaan', 'hasilpilihan.jawaban_id', '=', 'jawabanpertanyaan.id')
-            ->select('hasilpilihan.pertanyaan_id', 'hasilpilihan.jawaban_id', 'hasilpilihan.jadwal_id', 'jawabanpertanyaan.point')
+            ->join('quiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')
+            ->join('quiz_kategori', 'quiz.kategori_id', '=', 'quiz_kategori.id')
+            ->select('hasilpilihan.pertanyaan_id', 'hasilpilihan.jawaban_id', 'hasilpilihan.jadwal_id', 'jawabanpertanyaan.point', 'quiz_kategori.nama_kategori')
             ->where('hasilpilihan.jadwal_id', '=', $request->jadwal)
             ->where('jadwalquiz.quiz_id', '=', $request->id)
             ->where('hasilpilihan.user_id', '=', Auth::user()->id)
+            ->where('quiz_kategori.nama_kategori', 'NOT LIKE', '%IELTS%')
             ->get();
         $jumlah_soal = Pertanyaan::join('quiz', 'pertanyaan.quiz_id', '=', 'quiz.id')->join('jadwalquiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->where([['quiz.id', '=', $request->id], ['jadwalquiz.id', '=', $request->jadwal], ['pertanyaan.tipe_pertanyaan','!=','Custom Banner']])->get()->count();
         foreach ($hasil as $key => $value) {

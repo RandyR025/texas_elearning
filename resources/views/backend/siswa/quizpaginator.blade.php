@@ -28,6 +28,8 @@
                     $isAnswered = cekhasilPilihan($data->id, Auth::user()->id, $data->jadwal);
                 } elseif ($data->tipe_pertanyaan == "Teks") {
                     $isAnswered = cekhasilTeks($data->id, Auth::user()->id, $data->jadwal);
+                } elseif ($data->tipe_pertanyaan == "Blank_Teks") {
+                    $isAnswered = cekhasilBlank($data->id, Auth::user()->id, $data->jadwal);
                 } else {
                     $isAnswered = "";
                 }
@@ -40,8 +42,21 @@
 
             @foreach($quiz as $key => $data)
             <h4 hidden>{{$questionNum}}</h4>
-            <h4 class="mt-3">Soal {{$questionNum++}}</h4>
+            <!-- <h4 class="mt-3">Soal {{$questionNum++}}</h4> -->
+            <?php
+                $rumpang  = $data->pertanyaan;
+            ?>
+            @foreach($pilihan[$key] as $jawaban)
+            <?php
+                $hasilText = hasilText($jawaban->id, Auth::user()->id, $data->jadwal);
+                $rumpang = str_replace($jawaban->jawaban, '<input name="jawaban" id="jawaban'. $jawaban->id. '" placeholder="Isi jawaban" class="blank" data-jawaban-id="' . $jawaban->id . '" data-pertanyaan-id="' . $jawaban->pertanyaan_id . '" oninput="textSavedata(this,'.$jawaban->id.','. $jawaban->pertanyaan_id .','. $data->jadwal .','. Auth::user()->id .')" value="'.$hasilText.'"/>', $rumpang);
+            ?>
+            @endforeach
+            @if($data->tipe_pertanyaan == "Blank_Teks")
+            <p>{!! $rumpang !!}</p>
+            @else
             <p>{!! $data->pertanyaan !!}</p>
+            @endif
             <ul class="list-group">
                 @foreach($pilihan[$key] as $jawaban)
                 @if($data->tipe_pertanyaan == "Pilihan")
@@ -62,6 +77,15 @@
                     <p id="wordCount{{$jawaban->id}}">Jumlah kata: 0</p>
                     <input type="hidden" name="textid" value="{{$jawaban->id}}">
                 </div>
+                @endif
+                @if($data->tipe_pertanyaan == "Blank_Teks")
+                <!-- <div class="input-group">
+                    <textarea name="textjawaban" id="textjawaban{{$jawaban->id}}" data-jawaban-id="{{$jawaban->id}}" data-pertanyaan-id="{{$jawaban->pertanyaan_id}}" data-jadwal-id="{{$data->jadwal}}" cols="30" rows="10" class="form-control col-md-12" data-cek=""><?= hasilText($jawaban->id, Auth::user()->id, $data->jadwal) ?></textarea>
+                </div>
+                <div>
+                    <p id="wordCount{{$jawaban->id}}">Jumlah kata: 0</p>
+                    <input type="hidden" name="textid" value="{{$jawaban->id}}">
+                </div> -->
                 @endif
                 @endforeach
             </ul>
@@ -89,6 +113,8 @@
             $isAnswered = cekhasilPilihan($data->id, Auth::user()->id, $data->jadwal);
         } elseif ($data->tipe_pertanyaan == "Teks") {
             $isAnswered = cekhasilTeks($data->id, Auth::user()->id, $data->jadwal);
+        } elseif ($data->tipe_pertanyaan == "Blank_Teks") {
+            $isAnswered = cekhasilBlank($data->id, Auth::user()->id, $data->jadwal);
         }
         ?>
         <div class="question-box @if($isAnswered) bg-success @else bg-light @endif" onclick="goToQuestion({{ $questionNumm }})" data-pertanyaan-id="{{$data->id}}">
@@ -99,8 +125,21 @@
 
     @foreach($quiz as $key => $data)
     <h4 hidden>{{$questionNum}}</h4>
-    <h4 class="mt-3">Soal {{$questionNum++}}</h4>
+    <!-- <h4 class="mt-3">Soal {{$questionNum++}}</h4> -->
+    <?php
+    $rumpang  = $data->pertanyaan;
+    ?>
+    @foreach($pilihan[$key] as $jawaban)
+    <?php
+    $hasilText = hasilText($jawaban->id, Auth::user()->id, $data->jadwal);
+    $rumpang = str_replace($jawaban->jawaban, '<input name="jawaban" id="jawaban'. $jawaban->id. '" placeholder="Isi jawaban" class="blank" data-jawaban-id="' . $jawaban->id . '" data-pertanyaan-id="' . $jawaban->pertanyaan_id . '" oninput="textSavedata(this,'.$jawaban->id.','. $jawaban->pertanyaan_id .','. $data->jadwal .','. Auth::user()->id .')" value="'.$hasilText.'"/>', $rumpang);
+    ?>
+    @endforeach
+    @if($data->tipe_pertanyaan == "Blank_Teks")
+    <p>{!! $rumpang !!}</p>
+    @else
     <p>{!! $data->pertanyaan !!}</p>
+    @endif
     <ul class="list-group">
         @foreach($pilihan[$key] as $jawaban)
         @if($data->tipe_pertanyaan == "Pilihan")
@@ -121,6 +160,15 @@
             <p id="wordCount{{$jawaban->id}}">Jumlah kata: 0</p>
             <input type="hidden" name="textid" value="{{$jawaban->id}}">
         </div>
+        @endif
+        @if($data->tipe_pertanyaan == "Blank_Teks")
+                <!-- <div class="input-group">
+                    <textarea name="textjawaban" id="textjawaban{{$jawaban->id}}" data-jawaban-id="{{$jawaban->id}}" data-pertanyaan-id="{{$jawaban->pertanyaan_id}}" data-jadwal-id="{{$data->jadwal}}" cols="30" rows="10" class="form-control col-md-12" data-cek=""><?= hasilText($jawaban->id, Auth::user()->id, $data->jadwal) ?></textarea>
+                </div>
+                <div>
+                    <p id="wordCount{{$jawaban->id}}">Jumlah kata: 0</p>
+                    <input type="hidden" name="textid" value="{{$jawaban->id}}">
+                </div> -->
         @endif
         @endforeach
     </ul>
