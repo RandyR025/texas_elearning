@@ -91,6 +91,45 @@
 <script>
     $.widget.bridge('uibutton', $.ui.button)
 </script>
+<script>
+    $(document).ready(function(){
+        $('#formubahpassword').submit(function(e){
+            e.preventDefault();
+            $('#informasi').text('');
+            $('#passwordlama_error').text('');
+            $('#passwordbaru_error').text('');
+            $('#confirmpassword_error').text('');
+
+            var formData = $(this).serialize();
+            $.ajax({
+                url: "{{ route('change.password') }}",
+                type: "POST",
+                data: formData,
+                success: function(response){
+                    $('#informasi').text(response.message);
+                    if(response.success){
+                        $('#formubahpassword')[0].reset();
+                        $('#modal-ubahpass').modal('hide');
+                        Toast.fire({
+                        icon: "success",
+                        title: "Berhasil Di Tambah!",
+                    });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var errors = JSON.parse(xhr.responseText);
+                    if(errors.errors) {
+                        $('#passwordlama_error').text(errors.errors.passwordlama ? errors.errors.passwordlama[0] : '');
+                        $('#passwordbaru_error').text(errors.errors.passwordbaru ? errors.errors.passwordbaru[0] : '');
+                        $('#confirmpassword_error').text(errors.errors.passwordbaru_confirmation ? errors.errors.passwordbaru_confirmation[0] : '');
+                    } else {
+                        $('#informasi').text('Terjadi kesalahan saat memproses permintaan.');
+                    }
+                }
+            });
+        });
+    });
+</script>
 @yield('js')
 </body>
 

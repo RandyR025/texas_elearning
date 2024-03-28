@@ -46,15 +46,15 @@
                     <div class="media">
                         <div class="media-body ">
                             <h3 class="dropdown-item-title" id="login_nama">
-                            @if (auth()->user()->level_id == 1)
+                                @if (auth()->user()->level_id == 1)
                                 {{ Auth::user()->UserTentor->nama }}
-                            @endif
-                            @if (auth()->user()->level_id == 2)
+                                @endif
+                                @if (auth()->user()->level_id == 2)
                                 {{ Auth::user()->UserTentor->nama }}
-                            @endif
-                            @if (auth()->user()->level_id == 3)
+                                @endif
+                                @if (auth()->user()->level_id == 3)
                                 {{ Auth::user()->UserSiswa->nama }}
-                            @endif
+                                @endif
                             </h3>
                             <i class="fa fa-crown"><span class="p-1">{{ Auth::user()->userLevel->level }}</span></i></br>
                             @if (auth()->user()->level_id == 2)
@@ -63,7 +63,7 @@
                             @if (auth()->user()->level_id == 3)
                             <i class="fa fa-star"><span class="p-1">@if(isset(Auth::user()->userSiswa->Kelas->kelas)){{ Auth::user()->userSiswa->Kelas->kelas }}@else-@endif @if(isset(Auth::user()->userSiswa->Kursus->kursus))({{ Auth::user()->userSiswa->Kursus->kursus }})@else-@endif</span></i>
                             @endif
-                            
+
                             <!-- <p class="text-sm text-muted"><i class="fas fa-map-marker-alt"></i></p> -->
                         </div>
                     </div>
@@ -94,7 +94,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="form-horizontal" id="formubahpassword" action="javascript:void(0)">
+            <form class="form-horizontal" id="formubahpassword" action="{{ route('change.password') }}" method="POST">
+                @csrf
                 <div class="modal-body">
                     <span id="informasi" class="ml-3 text-danger"></span>
                     <div class="card-body">
@@ -115,12 +116,11 @@
                         <div class="form-group row">
                             <label for="confirmpassword" class="col-sm-5 col-form-label">Konfirmasi Password</label>
                             <div class="col-sm-7">
-                                <input type="password" name="confirmpassword" class="form-control" id="confirmpassword" placeholder="Password Baru">
+                                <input type="password" name="passwordbaru_confirmation" class="form-control" id="confirmpassword" placeholder="Konfirmasi Password">
                                 <span id="confirmpassword_error" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -128,8 +128,6 @@
                 </div>
             </form>
         </div>
-
     </div>
-
 </div>
 <!-- /.navbar -->

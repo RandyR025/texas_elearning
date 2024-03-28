@@ -38,6 +38,7 @@ Route::get('/', function () {
 });
 Route::group(['middleware' => ['auth','web']], function () {
     /*Akses Admin */
+    Route::post('change-password', [UserController::class, 'change'])->name('change.password');
     Route::group(['middleware' => ['cek_login:1']], function () {
         Route::get('/dashboardadmin', [DashboardController::class, 'index'])->name('dashboardadmin');
         /* Data Siswa */

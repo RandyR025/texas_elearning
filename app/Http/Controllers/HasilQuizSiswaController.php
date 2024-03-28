@@ -373,6 +373,101 @@ class HasilQuizSiswaController extends Controller
             $dompdf->render();
     
             return $dompdf->stream();
+        } elseif (strpos($cek->nama_kategori, "TOEIC") !== false) {
+            $listening = DetailHasil::join('jadwalquiz', 'detailhasil.jadwal_id', '=', 'jadwalquiz.id')->join('quiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->join('quiz_kategori', 'quiz.kategori_id', '=', 'quiz_kategori.id')->where([['jadwalquiz.group_id', '=', $id], ['jadwalquiz.tanggal_mulai', '=', $tanggal_mulai], ['quiz_kategori.nama_kategori', 'LIKE', '%Listening%']])->first();
+            if (isset($listening)) {
+                $listeningg = $listening->totals;
+            }else {
+                $listeningg = "-";
+            }
+            $reading = DetailHasil::join('jadwalquiz', 'detailhasil.jadwal_id', '=', 'jadwalquiz.id')->join('quiz', 'jadwalquiz.quiz_id', '=', 'quiz.id')->join('quiz_kategori', 'quiz.kategori_id', '=', 'quiz_kategori.id')->where([['jadwalquiz.group_id', '=', $id], ['jadwalquiz.tanggal_mulai', '=', $tanggal_mulai], ['quiz_kategori.nama_kategori', 'LIKE', '%Reading%']])->first();
+            if (isset($reading)) {
+                $readingg = $reading->totals;
+            }else {
+                $readingg = "-";
+            }
+            $total_keseluruhan = DetailHasil::join('jadwalquiz', 'detailhasil.jadwal_id', '=', 'jadwalquiz.id')->where([['jadwalquiz.group_id', '=', $id], ['jadwalquiz.tanggal_mulai', $tanggal_mulai]])
+                        ->sum('totals');
+                    $jumlah_keseluruhan = DetailHasil::join('jadwalquiz', 'detailhasil.jadwal_id', '=', 'jadwalquiz.id')->where([['jadwalquiz.group_id', '=', $id], ['jadwalquiz.tanggal_mulai', $tanggal_mulai]])
+                        ->count();
+                    $total = $total_keseluruhan / $jumlah_keseluruhan;
+            $imagePath = public_path('sertifikat/toeicprediction.jpg');
+            // dd($listening);
+            $tanggal = DetailHasil::join('jadwalquiz', 'detailhasil.jadwal_id', '=', 'jadwalquiz.id')->where([['jadwalquiz.group_id', '=', $id], ['jadwalquiz.tanggal_mulai', $tanggal_mulai]])
+                        ->first();
+            // Baca gambar dan konversi ke base64
+            $imageData = base64_encode(file_get_contents($imagePath));
+    
+            // Buat URI data
+            $imageUri = 'data:image/jpeg;base64,' . $imageData;
+    
+            // Buat instance DOMPDF
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isPhpEnabled', true); // Enable PHP support if needed
+            $dompdf = new Dompdf($options);
+    
+            // Muat HTML dengan URI gambar
+            $html = '<!DOCTYPE html>
+    <html>
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <style>
+        @page {
+            margin: 0;
+        }
+        .container {
+            position: absolute;
+            width: 100%;
+            height: 100vh; /* Sesuaikan dengan kebutuhan */
+            overflow: hidden;
+        }
+            .text {
+                position: absolute;
+                font-size: 24px; /* Ukuran teks */
+                font-family: "Times New Roman", Times, serif; /* Font teks */
+                z-index: 999; /* Pastikan teks di atas gambar */
+                color: black; /* Warna teks */
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <img src="' . $imageUri . '" style="width: 100%;" />
+            <div class="text" style="top: 250px; left: 355px; width: 400px;">
+                <h1 style="text-align: center;">'.Auth::user()->userSiswa->nama.'</h1>
+            </div>
+            <div class="text" style="top: 520px; left: 420px;">
+                Listening
+            </div>
+            <div class="text" style="top: 553px; left: 420px;">
+                Reading
+            </div>
+            <div class="text" style="top: 520px; left: 670px;">
+            '. $listeningg .'
+            </div>
+            <div class="text" style="top: 553px; left: 502;">
+            ' . $readingg . '
+            </div>
+            <div class="text" style="top: 580px; left: 502;">
+            '. number_format($total, 1) .'
+            </div>
+            <div class="text" style="top: 669px; left: 100;">
+            <h1 style="font-size: 16px;">'. strftime('%d %B %Y', strtotime($tanggal->tanggal_mulai)) .'</h1>
+            </div>
+        </div>
+    </body>
+    </html>';
+    
+            // Load HTML ke DOMPDF
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'landscape');
+    
+            // Render PDF
+            $dompdf->render();
+    
+            return $dompdf->stream();
         }
     }
 }

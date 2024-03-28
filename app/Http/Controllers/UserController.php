@@ -10,6 +10,7 @@ use App\Models\Tentor;
 use App\Models\User;
 use Illuminate\Http\Request;
 use DataTables;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -205,5 +206,31 @@ class UserController extends Controller
             ->get();
 
         return DataTables::of($siswa)->make(true);
+    }
+
+    public function change(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'passwordlama' => 'required',
+            'passwordbaru' => 'required|confirmed|min:8',
+            'passwordbaru_confirmation' => 'required|min:8',
+        ]);
+
+        // Ambil pengguna yang sedang login
+        $user = Auth::user();
+
+        // Periksa apakah password lama cocok
+        if (Hash::check($request->passwordlama, $user->password)) {
+            // Ubah password
+            $user->password = Hash::make($request->passwordbaru);
+            $user->save();
+
+            // Kirim respons JSON
+            return response()->json(['success' => true, 'message' => 'Password berhasil diubah.']);
+        } else {
+            // Kirim respons JSON dengan pesan error
+            return response()->json(['success' => false, 'message' => 'Password lama tidak cocok.']);
+        }
     }
 }
