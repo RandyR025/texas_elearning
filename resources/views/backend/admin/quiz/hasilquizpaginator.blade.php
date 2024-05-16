@@ -3,23 +3,7 @@
     @php $choicenum = 1; @endphp
     @if(strpos($kategori->nama_kategori, "Reading") !== false)
     <div class="row">
-        <div class="col-md-8">
-            @foreach($custom_banner as $data)
-            <div class="card card-primary collapsed-card">
-                <div class="card-header">
-                    <h3 class="card-title">{{$data->jawaban}}</h3>
-                    <div class="card-tools">
-                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body" id="coba">
-                    {!! $data->pertanyaan !!}
-                </div>
-            </div>
-            @endforeach
-        </div>
-        <div class="col-md-4">
+        <div class="col">
             <div class="question-boxes" id="question-boxes">
                 @foreach($kotakquiz as $data)
                 <?php

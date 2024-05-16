@@ -52,9 +52,35 @@ Quiz
                     @endif
                     <div id="countdown" class="mb-2"></div>
                     <?php if (!cekQuiz($quiz[0]->quiz_id, Auth::user()->id, $quiz[0]->jadwal)) { ?>
-                        <div class="box-body" id="datapertanyaan">
-                            @include('backend/siswa.quizpaginator')
+                        @if(strpos($kategori->nama_kategori, "Reading") !== false)
+                        <div class="row">
+                            <div class="box-body col-md-8 overflow-auto" style="max-height: 500px;">
+                                <div class="col">
+                                    @foreach($custom_banner as $data)
+                                    <div class="card card-primary collapsed-card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">{{$data->jawaban}}</h3>
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="card-body" id="coba">
+                                            {!! $data->pertanyaan !!}
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="box-body col-md-4" id="datapertanyaan">
+                                @include('backend/siswa.quizpaginator')
+                            </div>
                         </div>
+                        @else
+                        <div class="box-body" id="datapertanyaan">
+                             @include('backend/siswa.quizpaginator')
+                        </div>
+                        @endif
                     <?php } ?>
                 </div>
             </div>

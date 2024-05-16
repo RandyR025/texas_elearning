@@ -45,9 +45,35 @@ Quiz
             <div class="col-md-12">
                 <div class="box box-primary">
                     <div id="countdown" class="mb-2"></div>
-                        <div class="box-body" id="datapertanyaan">
+                    @if(strpos($kategori->nama_kategori, "Reading") !== false)
+                    <div class="row">
+                        <div class="box-body col-md-8 overflow-auto" style="max-height: 500px;">
+                            <div class="col">
+                                @foreach($custom_banner as $data)
+                                <div class="card card-primary collapsed-card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">{{$data->jawaban}}</h3>
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body" id="coba">
+                                        {!! $data->pertanyaan !!}
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="box-body col-md-4" id="datapertanyaan">
                             @include('backend/tentor.hasilquizpaginator')
                         </div>
+                    </div>
+                    @else
+                    <div class="box-body" id="datapertanyaan">
+                         @include('backend/tentor.hasilquizpaginator')
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>

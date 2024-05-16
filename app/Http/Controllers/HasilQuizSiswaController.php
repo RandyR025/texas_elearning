@@ -118,7 +118,7 @@ class HasilQuizSiswaController extends Controller
                     ->sum('totals');
                 $jumlah_keseluruhan = DetailHasil::join('jadwalquiz', 'detailhasil.jadwal_id', '=', 'jadwalquiz.id')->where([['jadwalquiz.group_id', '=', $item->group_id], ['jadwalquiz.tanggal_mulai', $item->tanggal_mulai]])
                     ->count();
-                $item->total_keseluruhan = number_format($total_keseluruhan / $jumlah_keseluruhan, 1);
+                $item->total_keseluruhan = number_format($total_keseluruhan, 1);
                 $dataUnik[$key] = $item;
             }
         }
@@ -283,7 +283,10 @@ class HasilQuizSiswaController extends Controller
                         ->sum('totals');
                     $jumlah_keseluruhan = DetailHasil::join('jadwalquiz', 'detailhasil.jadwal_id', '=', 'jadwalquiz.id')->where([['jadwalquiz.group_id', '=', $id], ['jadwalquiz.tanggal_mulai', $tanggal_mulai]])
                         ->count();
-                    $total = $total_keseluruhan / $jumlah_keseluruhan;
+            $total = $total_keseluruhan / $jumlah_keseluruhan;
+            $total = round($total * 2) / 2;
+            // Memformat nilai total dengan satu digit desimal
+            $total_formatted = number_format($total, 1);
             $imagePath = public_path('sertifikat/ieltssimulation.jpg');
             // dd($listening);
             $tanggal = DetailHasil::join('jadwalquiz', 'detailhasil.jadwal_id', '=', 'jadwalquiz.id')->where([['jadwalquiz.group_id', '=', $id], ['jadwalquiz.tanggal_mulai', $tanggal_mulai]])
@@ -356,7 +359,7 @@ class HasilQuizSiswaController extends Controller
             ' . $readingg . '
             </div>
             <div class="text" style="top: 602px; left: 502;">
-            '. number_format($total, 1) .'
+            '. $total_formatted .'
             </div>
             <div class="text" style="top: 669px; left: 100;">
             <h1 style="font-size: 16px;">'. strftime('%d %B %Y', strtotime($tanggal->tanggal_mulai)) .'</h1>
@@ -390,7 +393,7 @@ class HasilQuizSiswaController extends Controller
                         ->sum('totals');
                     $jumlah_keseluruhan = DetailHasil::join('jadwalquiz', 'detailhasil.jadwal_id', '=', 'jadwalquiz.id')->where([['jadwalquiz.group_id', '=', $id], ['jadwalquiz.tanggal_mulai', $tanggal_mulai]])
                         ->count();
-                    $total = $total_keseluruhan / $jumlah_keseluruhan;
+                    $total = $total_keseluruhan;
             $imagePath = public_path('sertifikat/toeicprediction.jpg');
             // dd($listening);
             $tanggal = DetailHasil::join('jadwalquiz', 'detailhasil.jadwal_id', '=', 'jadwalquiz.id')->where([['jadwalquiz.group_id', '=', $id], ['jadwalquiz.tanggal_mulai', $tanggal_mulai]])

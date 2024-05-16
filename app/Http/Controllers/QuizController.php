@@ -257,6 +257,7 @@ class QuizController extends Controller
     {
         $siswa = Quiz::select('quiz.id', 'quiz.judul_quiz', 'quiz.kategori_id', 'quiz_kategori.nama_kategori', 'quiz_kategori.deskripsi')
             ->join('quiz_kategori', 'quiz.kategori_id', '=', 'quiz_kategori.id')
+            ->orderBy('quiz.id','DESC')
             ->get();
 
         return DataTables::of($siswa)->make(true);
